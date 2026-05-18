@@ -1,0 +1,8 @@
+services:
+  orchestrator:
+    build: .
+    image: martinelli/orchestrator:latest
+    container_name: orchestrator
+    restart: unless-stopped
+    ports:
+      - "3310:80"
