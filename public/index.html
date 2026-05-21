@@ -195,7 +195,7 @@
 <body>
 
 <header>
-  <div class="logo">Martinelli <span>Orchestrator</span> · MTLADVL048 · 192.168.0.148</div>
+  <div class="logo">Martinelli <span>Orchestrator</span> · <span id="host-info">…</span></div>
   <div class="badge">v2</div>
   <div class="subtitle">:3310 — hub de serviços</div>
 </header>
@@ -359,6 +359,13 @@
 </footer>
 
 <script>
+  // Reflete o host que serve a página (cards apontam pra "esta máquina", não pra IP fixo)
+  const host = window.location.hostname;
+  document.getElementById('host-info').textContent = host;
+  document.querySelectorAll('a.card').forEach(a => {
+    a.href = a.href.replace('192.168.0.148', host);
+  });
+
   const el = document.getElementById('ts');
   const fmt = () => {
     const d = new Date();
