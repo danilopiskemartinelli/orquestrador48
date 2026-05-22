@@ -353,6 +353,11 @@
 
 </div>
 
+<div class="section-title" style="max-width:1200px;margin:0 auto 1rem;">Recursos Docker</div>
+<div id="stats-grid" style="max-width:1200px;margin:0 auto 2.5rem;">
+  <div style="color:var(--muted);font-size:0.82rem;">Carregando…</div>
+</div>
+
 <footer>
   Martinelli &mdash; Orchestrator &nbsp;|&nbsp; :3310 &nbsp;|&nbsp;
   <span id="ts"></span>
@@ -365,6 +370,99 @@
   document.querySelectorAll('a.card').forEach(a => {
     a.href = a.href.replace('192.168.0.148', host);
   });
+
+  // ── Docker resource stats ──────────────────────────────────────────────
+  function fmtBytes(b) {
+    if (b >= 1073741824) return (b / 1073741824).toFixed(1) + ' GB';
+    if (b >= 1048576)    return (b / 1048576).toFixed(0) + ' MB';
+    return (b / 1024).toFixed(0) + ' KB';
+  }
+
+  function barColor(pct) {
+    if (pct >= 80) return '#f85149';
+    if (pct >= 50) return '#d29922';
+    return '#238636';
+  }
+
+  function renderStats(data) {
+    const { containers, system } = data;
+    const grid = document.getElementById('stats-grid');
+    if (!containers.length) {
+      grid.innerHTML = '<div style="color:var(--muted);font-size:0.82rem;">Nenhum container rodando.</div>';
+      return;
+    }
+
+    // Escala relativa: maior da lista = 100% da barra; cor = carga absoluta do host
+    const maxCpu = Math.max(...containers.map(c => c.cpu_pct), 0.001);
+    const maxMem = Math.max(...containers.map(c => c.mem_bytes), 1);
+
+    const rows = containers.map(c => {
+      const cpuBarPct = (c.cpu_pct / maxCpu) * 100;
+      const memBarPct = (c.mem_bytes / maxMem) * 100;
+      const cpuAbsPct = Math.min((c.cpu_pct / (system.cpu_cores * 100)) * 100, 100);
+      const memAbsPct = Math.min((c.mem_bytes / system.mem_total) * 100, 100);
+      const cpuBar  = barColor(cpuAbsPct);
+      const memBar  = barColor(memAbsPct);
+      const cpuLabel = c.cpu_pct.toFixed(1) + '%';
+      const memLabel = fmtBytes(c.mem_bytes);
+      return `
+        <div style="
+          background:var(--surface);border:1px solid var(--border);
+          border-radius:var(--radius);padding:1rem 1.25rem;
+          display:grid;grid-template-columns:200px 1fr 1fr;
+          align-items:center;gap:1rem;">
+          <div style="font-size:0.82rem;font-family:monospace;
+            color:var(--text);overflow:hidden;text-overflow:ellipsis;
+            white-space:nowrap;" title="${c.name}">${c.name}</div>
+          <div>
+            <div style="display:flex;justify-content:space-between;
+              font-size:0.7rem;color:var(--muted);margin-bottom:3px;">
+              <span>CPU</span>
+              <span style="color:var(--text);font-weight:600;">${cpuLabel}</span>
+            </div>
+            <div style="background:var(--tag-bg);border-radius:3px;height:8px;overflow:hidden;">
+              <div style="width:${cpuBarPct.toFixed(2)}%;height:100%;
+                background:${cpuBar};transition:width .6s ease;border-radius:3px;"></div>
+            </div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;
+              font-size:0.7rem;color:var(--muted);margin-bottom:3px;">
+              <span>RAM</span>
+              <span style="color:var(--text);font-weight:600;">${memLabel}</span>
+            </div>
+            <div style="background:var(--tag-bg);border-radius:3px;height:8px;overflow:hidden;">
+              <div style="width:${memBarPct.toFixed(2)}%;height:100%;
+                background:${memBar};transition:width .6s ease;border-radius:3px;"></div>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+
+    grid.innerHTML = `
+      <div style="display:flex;flex-direction:column;gap:0.5rem;">
+        <div style="
+          display:grid;grid-template-columns:200px 1fr 1fr;gap:1rem;
+          font-size:0.68rem;text-transform:uppercase;letter-spacing:.8px;
+          color:var(--muted);padding:0 1.25rem;">
+          <span>Container</span><span>CPU (proporcional ao host)</span><span>RAM (proporcional ao host)</span>
+        </div>
+        ${rows}
+      </div>`;
+  }
+
+  function loadStats() {
+    fetch('/api/stats')
+      .then(r => r.json())
+      .then(renderStats)
+      .catch(() => {
+        document.getElementById('stats-grid').innerHTML =
+          '<div style="color:var(--muted);font-size:0.82rem;">Stats indisponíveis.</div>';
+      });
+  }
+  loadStats();
+  setInterval(loadStats, 5000);
+  // ────────────────────────────────────────────────────────────────────────
 
   const el = document.getElementById('ts');
   const fmt = () => {

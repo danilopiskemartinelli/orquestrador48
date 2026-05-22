@@ -6,3 +6,13 @@ services:
     restart: unless-stopped
     ports:
       - "3310:80"
+    depends_on:
+      - stats-api
+
+  stats-api:
+    build: ./api
+    image: martinelli/orchestrator-stats:latest
+    container_name: orchestrator-stats
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
