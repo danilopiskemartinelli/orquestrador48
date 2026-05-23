@@ -338,58 +338,58 @@
     return `${scheme}://${ip}:${porta}`;
   }
 
+  function makeCard(s, ip) {
+    const url = cardUrl(s, ip);
+    const porta = mainPort(s.subdockers);
+    const portaLabel = porta ? `:${porta}` : '';
+    const enderecoLabel = s.dns_exposto && s.endereco ? s.endereco : '';
+    const tags = (s.tags || []).map(t => {
+      const cls = TAG_CLASS[t] || '';
+      return `<span class="tag ${cls}">${t}</span>`;
+    }).join('');
+    const metaLine = [
+      s.responsavel ? `<span class="card-meta-item">${s.responsavel}</span>` : '',
+      enderecoLabel ? `<span class="card-meta-item card-meta-link">${enderecoLabel}</span>` : '',
+    ].filter(Boolean).join('<span class="card-meta-sep">·</span>');
+
+    return `
+      <a class="card" href="${url || '#'}" target="_blank" data-probe-url="${url || ''}">
+        <div class="card-header">
+          <div class="card-name">${s.nome}</div>
+          ${portaLabel ? `<div class="card-port">${portaLabel}</div>` : ''}
+        </div>
+        <div class="card-desc">${s.descricao || ''}</div>
+        <div class="card-meta">${metaLine}</div>
+        <div class="card-footer">${tags}<div class="status-dot"></div></div>
+      </a>`;
+  }
+
   function renderMapa(data) {
     const { ip, sistemas } = data;
-    const groups = {};
-    const ORDER = ['Full-stack', 'Backend / API', 'Ferramentas / IA', 'Infraestrutura'];
+    const main = [];
+    const monitor = [];
 
     for (const [nome, s] of Object.entries(sistemas)) {
-      const cat = s.categoria || 'Outros';
-      if (!groups[cat]) groups[cat] = [];
-      groups[cat].push({ nome, ...s });
+      const item = { nome, ...s };
+      if (s.categoria === 'Infraestrutura') monitor.push(item);
+      else main.push(item);
     }
 
-    const container = document.getElementById('cards-container');
     let html = '';
 
-    const cats = ORDER.filter(c => groups[c]).concat(
-      Object.keys(groups).filter(c => !ORDER.includes(c))
-    );
-
-    for (const cat of cats) {
-      const items = groups[cat];
-      html += `<div class="section-title">${cat}</div><div class="grid" data-cat="${cat}">`;
-
-      for (const s of items) {
-        const url = cardUrl(s, ip);
-        const porta = mainPort(s.subdockers);
-        const portaLabel = porta ? `:${porta}` : '';
-        const enderecoLabel = s.dns_exposto && s.endereco ? s.endereco : '';
-        const tags = (s.tags || []).map(t => {
-          const cls = TAG_CLASS[t] || '';
-          return `<span class="tag ${cls}">${t}</span>`;
-        }).join('');
-
-        const metaLine = [
-          s.responsavel ? `<span class="card-meta-item">${s.responsavel}</span>` : '',
-          enderecoLabel ? `<span class="card-meta-item card-meta-link">${enderecoLabel}</span>` : '',
-        ].filter(Boolean).join('<span class="card-meta-sep">·</span>');
-
-        html += `
-          <a class="card" href="${url || '#'}" target="_blank" data-probe-url="${url || ''}">
-            <div class="card-header">
-              <div class="card-name">${s.nome}</div>
-              ${portaLabel ? `<div class="card-port">${portaLabel}</div>` : ''}
-            </div>
-            <div class="card-desc">${s.descricao || ''}</div>
-            <div class="card-meta">${metaLine}</div>
-            <div class="card-footer">${tags}<div class="status-dot"></div></div>
-          </a>`;
-      }
+    if (main.length) {
+      html += `<div class="section-title">Sistemas</div><div class="grid">`;
+      html += main.map(s => makeCard(s, ip)).join('');
       html += `</div>`;
     }
 
-    container.innerHTML = html;
+    if (monitor.length) {
+      html += `<div class="section-title">Monitor</div><div class="grid">`;
+      html += monitor.map(s => makeCard(s, ip)).join('');
+      html += `</div>`;
+    }
+
+    document.getElementById('cards-container').innerHTML = html;
     probeCards();
     setInterval(probeCards, PROBE_INTERVAL_MS);
   }
