@@ -49,7 +49,7 @@ MTLADVL051:
   sistemas:
     AzureGroups:
       pasta: null
-      responsavel: "Chris"
+      responsavel: "Christiano"
       dns_exposto: true
       endereco: azgroups.martinelli.adv.br
       descricao: "Sincronização e gerenciamento de grupos Azure AD — automação de acessos e permissões."
