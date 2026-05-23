@@ -394,13 +394,18 @@
     setInterval(probeCards, PROBE_INTERVAL_MS);
   }
 
-  fetch('/api/mapa')
-    .then(r => r.json())
-    .then(renderMapa)
-    .catch(() => {
-      document.getElementById('cards-container').innerHTML =
-        '<div style="color:var(--text-tertiary);font-size:0.78rem;max-width:1200px;margin:0 auto;">Erro ao carregar sistemas.</div>';
-    });
+  function loadMapa() {
+    fetch('/api/mapa')
+      .then(r => r.json())
+      .then(renderMapa)
+      .catch(() => {
+        document.getElementById('cards-container').innerHTML =
+          '<div style="color:var(--text-tertiary);font-size:0.78rem;max-width:1200px;margin:0 auto;">Erro ao carregar sistemas.</div>';
+      });
+  }
+
+  loadMapa();
+  setInterval(loadMapa, 60000);
 
   // ── Docker resource stats ──────────────────────────────────────────────
   function fmtBytes(b) {
