@@ -153,7 +153,7 @@ MTLADVL063:
         Vault:      {porta: 8200}
 
     Martinelli Access:
-      pasta: accessmartinelli
+      pasta: access-martinelli
       responsavel: "TI Team"
       dns_exposto: false
       endereco: null
