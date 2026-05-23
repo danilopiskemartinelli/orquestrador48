@@ -176,7 +176,7 @@ MTLADVL063:
       subdockers:
         Gateway:  {porta: 3314}
         Backend:  {porta: 8314}
-        Frontend: {porta: 3000}
+        Frontend: {porta: null}
 
     Martinelli Recruit:
       pasta: recruit-martinelli
