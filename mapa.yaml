@@ -5,7 +5,7 @@ MTLADVL048:
   sistemas:
     MartiCerts:
       pasta: marticerts
-      responsavel: "Danilo - TI Team"
+      responsavel: "TI Team"
       dns_exposto: true
       endereco: marticerts.martinelli.adv.br
       descricao: "Plataforma de certificados digitais — emissão, renovação e gestão de acessos via VPN."
@@ -20,7 +20,7 @@ MTLADVL048:
 
     Gestao a Vista:
       pasta: gestao-a-vista
-      responsavel: "Danilo - TI Team"
+      responsavel: "TI Team"
       dns_exposto: false
       endereco: null
       descricao: "Dashboard analítico de chamados e atividades — BI operacional via Streamlit."
@@ -31,7 +31,7 @@ MTLADVL048:
 
     Gestao de Alocacao:
       pasta: gestao-alocacao-martinelli
-      responsavel: "Danilo - TI Team"
+      responsavel: "TI Team"
       dns_exposto: false
       endereco: null
       descricao: "Controle de alocação de equipes e recursos por projeto e departamento."
@@ -59,7 +59,7 @@ MTLADVL051:
 
     Visoes de Futuro:
       pasta: null
-      responsavel: "Danilo"
+      responsavel: "TI Team"
       dns_exposto: true
       endereco: visoesdefuturo.martinelli.adv.br
       descricao: "Sistema de Amigo Oculto — sorteio, envio de e-mails e respostas de participantes."
@@ -69,7 +69,7 @@ MTLADVL051:
 
     Perfil Visoes de Futuro:
       pasta: null
-      responsavel: "Danilo"
+      responsavel: "TI Team"
       dns_exposto: true
       endereco: perfilvisoesdefuturo.martinelli.adv.br
       descricao: "Persona IA para o sistema Visões de Futuro — geração de perfis comportamentais."
@@ -79,7 +79,7 @@ MTLADVL051:
 
     Techweek Prototipos:
       pasta: null
-      responsavel: "Danilo - TI Team"
+      responsavel: "TI Team"
       dns_exposto: false
       endereco: null
       descricao: "Protótipos desenvolvidos durante a Techweek interna Martinelli."
@@ -89,7 +89,7 @@ MTLADVL051:
 
     Hub Homolog Antigo:
       pasta: null
-      responsavel: "Caetano e Leo - TI Team"
+      responsavel: "TI Team"
       dns_exposto: true
       endereco: homologahubti.martinelli.adv.br
       descricao: "Ambiente de homologação do Hub Martinelli — versão legada em manutenção."
@@ -99,7 +99,7 @@ MTLADVL051:
 
     Gestao de Alocacao:
       pasta: null
-      responsavel: "Caetano e Leo - TI Team"
+      responsavel: "TI Team"
       dns_exposto: false
       endereco: null
       descricao: "Controle de alocação de equipes e recursos por projeto e departamento."
@@ -114,7 +114,7 @@ MTLADVL063:
   sistemas:
     Aura IA by Martinelli:
       pasta: auramartinelli
-      responsavel: "Danilo"
+      responsavel: "TI Team"
       dns_exposto: false
       endereco: null
       descricao: "Martinelli Chat — Next.js + FastAPI + LLM (Ollama/Anthropic/Gemini) sobre HTTPS."
@@ -132,7 +132,7 @@ MTLADVL063:
 
     Martinelli Access:
       pasta: accessmartinelli
-      responsavel: "Danilo"
+      responsavel: "TI Team"
       dns_exposto: false
       endereco: null
       descricao: "Motor de autorização baseado em papéis e atributos — API centralizada de permissões."
@@ -145,7 +145,7 @@ MTLADVL063:
 
     Hub Martinelli 2.0:
       pasta: hub-martinelli-2
-      responsavel: "Caetano"
+      responsavel: "TI Team"
       dns_exposto: false
       endereco: null
       descricao: "Hub de serviços Martinelli v2 — gateway nginx + backend de plugins + frontend."
@@ -158,7 +158,7 @@ MTLADVL063:
 
     Martinelli Recruit:
       pasta: recruit-martinelli
-      responsavel: "Danilo - TI Team"
+      responsavel: "TI Team"
       dns_exposto: false
       endereco: null
       descricao: "Plataforma de RH — gestão de colaboradores, vagas e processos seletivos."
