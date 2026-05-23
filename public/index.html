@@ -204,6 +204,17 @@
     .card.offline { opacity: 0.5; }
     .card.offline:hover { opacity: 0.8; }
 
+    .card-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      flex-wrap: wrap;
+      font-size: 0.72rem;
+      color: var(--text-tertiary);
+    }
+    .card-meta-sep { color: var(--border-dark); }
+    .card-meta-link { color: var(--primary); }
+
     /* Stats grid */
     .stats-row {
       background: var(--surface);
@@ -268,187 +279,8 @@
   <div class="header-subtitle">:3310 &nbsp;|&nbsp; <span id="ts"></span></div>
 </header>
 
-<!-- FULL-STACK -->
-<div class="section-title">Full-stack</div>
-<div class="grid">
-
-  <a class="card" href="https://192.168.0.170:9443" target="_blank">
-    <div class="card-header">
-      <div class="card-name">MartiCerts</div>
-      <div class="card-port">:9443</div>
-    </div>
-    <div class="card-desc">Plataforma de certificados digitais — emissão, renovação e gestão de acessos via VPN.</div>
-    <div class="card-footer">
-      <span class="tag full">Next.js</span>
-      <span class="tag backend">FastAPI</span>
-      <span class="tag infra">Vault</span>
-      <div class="status-dot"></div>
-    </div>
-  </a>
-
-  <a class="card" href="http://192.168.0.170:3322" target="_blank">
-    <div class="card-header">
-      <div class="card-name">HR Platform</div>
-      <div class="card-port">:3322 / :8313</div>
-    </div>
-    <div class="card-desc">Plataforma de RH — gestão de colaboradores, vagas e processos seletivos.</div>
-    <div class="card-footer">
-      <span class="tag full">Next.js</span>
-      <span class="tag backend">FastAPI</span>
-      <div class="status-dot"></div>
-    </div>
-  </a>
-
-  <a class="card" href="http://192.168.0.170:3317" target="_blank">
-    <div class="card-header">
-      <div class="card-name">Dinâmica Martinelli</div>
-      <div class="card-port">:3317 / :8317</div>
-    </div>
-    <div class="card-desc">Sistema de dinâmicas e atividades internas para o escritório Martinelli.</div>
-    <div class="card-footer">
-      <span class="tag full">Next.js</span>
-      <span class="tag backend">FastAPI</span>
-      <div class="status-dot"></div>
-    </div>
-  </a>
-
-  <a class="card" href="http://192.168.0.170:3321" target="_blank">
-    <div class="card-header">
-      <div class="card-name">Visões de Futuro</div>
-      <div class="card-port">:3321 / :8310</div>
-    </div>
-    <div class="card-desc">Sistema de Amigo Oculto — sorteio, envio de e-mails e respostas de participantes.</div>
-    <div class="card-footer">
-      <span class="tag full">Next.js</span>
-      <span class="tag backend">FastAPI</span>
-      <div class="status-dot"></div>
-    </div>
-  </a>
-
-  <a class="card" href="http://192.168.0.170:3320" target="_blank">
-    <div class="card-header">
-      <div class="card-name">Gestão de Alocação</div>
-      <div class="card-port">:3320</div>
-    </div>
-    <div class="card-desc">Controle de alocação de equipes e recursos por projeto e departamento.</div>
-    <div class="card-footer">
-      <span class="tag full">Next.js</span>
-      <span class="tag backend">PostgreSQL</span>
-      <div class="status-dot"></div>
-    </div>
-  </a>
-
-</div>
-
-<!-- BACKEND / API -->
-<div class="section-title">Backend / API</div>
-<div class="grid">
-
-  <a class="card" href="http://192.168.0.170:3316" target="_blank">
-    <div class="card-header">
-      <div class="card-name">RBAC / ABAC</div>
-      <div class="card-port">:3316</div>
-    </div>
-    <div class="card-desc">Motor de autorização baseado em papéis e atributos — API centralizada de permissões.</div>
-    <div class="card-footer">
-      <span class="tag backend">Node.js</span>
-      <span class="tag backend">MySQL</span>
-      <div class="status-dot"></div>
-    </div>
-  </a>
-
-  <a class="card" href="http://192.168.0.170:8080" target="_blank">
-    <div class="card-header">
-      <div class="card-name">Hub Martinelli</div>
-      <div class="card-port">:8080</div>
-    </div>
-    <div class="card-desc">Hub de serviços Martinelli v2 — gateway nginx + backend de plugins + frontend.</div>
-    <div class="card-footer">
-      <span class="tag full">Next.js</span>
-      <span class="tag backend">FastAPI</span>
-      <span class="tag static">nginx</span>
-      <div class="status-dot"></div>
-    </div>
-  </a>
-
-</div>
-
-<!-- FERRAMENTAS / IA -->
-<div class="section-title">Ferramentas / IA</div>
-<div class="grid">
-
-  <a class="card" href="http://192.168.0.170:3313" target="_blank">
-    <div class="card-header">
-      <div class="card-name">Treinamentos IA</div>
-      <div class="card-port">:3313</div>
-    </div>
-    <div class="card-desc">Plataforma de treinamentos com inteligência artificial para equipes internas.</div>
-    <div class="card-footer">
-      <span class="tag ia">IA</span>
-      <div class="status-dot"></div>
-    </div>
-  </a>
-
-  <a class="card" href="http://192.168.0.170:3318" target="_blank">
-    <div class="card-header">
-      <div class="card-name">Gestão à Vista</div>
-      <div class="card-port">:3318</div>
-    </div>
-    <div class="card-desc">Dashboard analítico de chamados e atividades — BI operacional via Streamlit.</div>
-    <div class="card-footer">
-      <span class="tag stream">Streamlit</span>
-      <span class="tag ia">Python</span>
-      <div class="status-dot"></div>
-    </div>
-  </a>
-
-  <a class="card" href="http://192.168.0.170:3319" target="_blank">
-    <div class="card-header">
-      <div class="card-name">Sistemas / Hierarquia</div>
-      <div class="card-port">:3319</div>
-    </div>
-    <div class="card-desc">Mapa hierárquico de sistemas — visualização de dependências e estrutura organizacional.</div>
-    <div class="card-footer">
-      <span class="tag static">Static</span>
-      <span class="tag static">nginx</span>
-      <div class="status-dot"></div>
-    </div>
-  </a>
-
-  <a class="card" href="https://192.168.0.170:18443/chat" target="_blank">
-    <div class="card-header">
-      <div class="card-name">MCH — Martinelli Chat</div>
-      <div class="card-port">:18443</div>
-    </div>
-    <div class="card-desc">Martinelli Chat — Next.js + FastAPI + LLM (Ollama/Anthropic/Gemini) sobre HTTPS.</div>
-    <div class="card-footer">
-      <span class="tag full">Next.js</span>
-      <span class="tag backend">FastAPI</span>
-      <span class="tag ia">LLM</span>
-      <div class="status-dot"></div>
-    </div>
-  </a>
-
-</div>
-
-<!-- INFRAESTRUTURA -->
-<div class="section-title">Infraestrutura</div>
-<div class="grid">
-
-  <a class="card" href="http://192.168.0.170:3323" target="_blank">
-    <div class="card-header">
-      <div class="card-name">Monitor</div>
-      <div class="card-port">:3323</div>
-    </div>
-    <div class="card-desc">Monitoramento em tempo real — CPU, RAM, disco e métricas por container Docker.</div>
-    <div class="card-footer">
-      <span class="tag stream">Streamlit</span>
-      <span class="tag infra">Docker</span>
-      <div class="status-dot"></div>
-    </div>
-  </a>
-
-
+<div id="cards-container">
+  <div style="color:var(--text-tertiary);font-size:0.78rem;max-width:1200px;margin:0 auto;">Carregando sistemas…</div>
 </div>
 
 <!-- RECURSOS DOCKER -->
@@ -464,9 +296,6 @@
 <script>
   const host = window.location.hostname;
   document.getElementById('host-info').textContent = host;
-  document.querySelectorAll('a.card').forEach(a => {
-    a.href = a.href.replace('192.168.0.170', host);
-  });
 
   const el = document.getElementById('ts');
   const fmt = () => {
@@ -475,6 +304,103 @@
   };
   fmt();
   setInterval(fmt, 1000);
+
+  // ── Tag style map ──────────────────────────────────────────────────────
+  const TAG_CLASS = {
+    'Next.js': 'full', 'React': 'full',
+    'FastAPI': 'backend', 'Node.js': 'backend', 'PostgreSQL': 'backend',
+    'MySQL': 'backend', 'Redis': 'backend', 'nginx': 'static',
+    'Streamlit': 'stream',
+    'LLM': 'ia', 'Ollama': 'ia', 'IA': 'ia', 'Python': 'ia',
+    'Vault': 'infra', 'Docker': 'infra', 'Azure': 'infra',
+    'Static': 'static',
+  };
+
+  function mainPort(subdockers) {
+    if (!subdockers || !Object.keys(subdockers).length) return null;
+    const priority = ['Principal', 'Unico', 'Único', 'Frontend', 'Gateway', 'Web'];
+    for (const key of priority) {
+      if (subdockers[key]?.porta != null) return subdockers[key].porta;
+    }
+    for (const v of Object.values(subdockers)) {
+      if (v?.porta != null) return v.porta;
+    }
+    return null;
+  }
+
+  function cardUrl(sistema, ip) {
+    if (sistema.dns_exposto && sistema.endereco) {
+      return `https://${sistema.endereco}`;
+    }
+    const porta = mainPort(sistema.subdockers);
+    if (!porta) return null;
+    const scheme = [443, 9443, 18443, 8443].includes(porta) ? 'https' : 'http';
+    return `${scheme}://${ip}:${porta}`;
+  }
+
+  function renderMapa(data) {
+    const { ip, sistemas } = data;
+    const groups = {};
+    const ORDER = ['Full-stack', 'Backend / API', 'Ferramentas / IA', 'Infraestrutura'];
+
+    for (const [nome, s] of Object.entries(sistemas)) {
+      const cat = s.categoria || 'Outros';
+      if (!groups[cat]) groups[cat] = [];
+      groups[cat].push({ nome, ...s });
+    }
+
+    const container = document.getElementById('cards-container');
+    let html = '';
+
+    const cats = ORDER.filter(c => groups[c]).concat(
+      Object.keys(groups).filter(c => !ORDER.includes(c))
+    );
+
+    for (const cat of cats) {
+      const items = groups[cat];
+      html += `<div class="section-title">${cat}</div><div class="grid" data-cat="${cat}">`;
+
+      for (const s of items) {
+        const url = cardUrl(s, ip);
+        const porta = mainPort(s.subdockers);
+        const portaLabel = porta ? `:${porta}` : '';
+        const enderecoLabel = s.dns_exposto && s.endereco ? s.endereco : '';
+        const tags = (s.tags || []).map(t => {
+          const cls = TAG_CLASS[t] || '';
+          return `<span class="tag ${cls}">${t}</span>`;
+        }).join('');
+
+        const metaLine = [
+          s.responsavel ? `<span class="card-meta-item">${s.responsavel}</span>` : '',
+          enderecoLabel ? `<span class="card-meta-item card-meta-link">${enderecoLabel}</span>` : '',
+        ].filter(Boolean).join('<span class="card-meta-sep">·</span>');
+
+        html += `
+          <a class="card" href="${url || '#'}" target="_blank" data-probe-url="${url || ''}">
+            <div class="card-header">
+              <div class="card-name">${s.nome}</div>
+              ${portaLabel ? `<div class="card-port">${portaLabel}</div>` : ''}
+            </div>
+            <div class="card-desc">${s.descricao || ''}</div>
+            <div class="card-meta">${metaLine}</div>
+            <div class="card-footer">${tags}<div class="status-dot"></div></div>
+          </a>`;
+      }
+      html += `</div>`;
+    }
+
+    container.innerHTML = html;
+    probeCards();
+    setInterval(probeCards, PROBE_INTERVAL_MS);
+  }
+
+  fetch('/api/mapa')
+    .then(r => r.json())
+    .then(renderMapa)
+    .catch(() => {
+      document.getElementById('cards-container').innerHTML =
+        '<div style="color:var(--text-tertiary);font-size:0.78rem;max-width:1200px;margin:0 auto;">Erro ao carregar sistemas.</div>';
+    });
 
   // ── Docker resource stats ──────────────────────────────────────────────
   function fmtBytes(b) {
@@ -549,9 +475,10 @@
   const PROBE_INTERVAL_MS = 30000;
 
   async function probeCards() {
-    const cards = Array.from(document.querySelectorAll('a.card[href^="http"]'));
-    if (!cards.length) return;
-    const urls = cards.map(c => c.getAttribute('href'));
+    const cards = Array.from(document.querySelectorAll('a.card[data-probe-url]'));
+    const probeList = cards.filter(c => c.dataset.probeUrl);
+    if (!probeList.length) return;
+    const urls = probeList.map(c => c.dataset.probeUrl);
     const qs = urls.map(u => 'url=' + encodeURIComponent(u)).join('&');
     let data = {};
     try {
@@ -559,11 +486,11 @@
       data = await r.json();
     } catch (_) { return; }
     cards.forEach(c => {
-      const u = c.getAttribute('href');
+      const u = c.dataset.probeUrl;
       const dot = c.querySelector('.status-dot');
-      const ok = data[u] === true;
+      const ok = u && data[u] === true;
       if (dot) dot.classList.toggle('online', ok);
-      c.style.display = ok ? '' : 'none';
+      c.style.display = (u && !ok) ? 'none' : '';
     });
     document.querySelectorAll('.grid').forEach(grid => {
       const anyVisible = Array.from(grid.querySelectorAll('a.card')).some(c => c.style.display !== 'none');
@@ -572,9 +499,6 @@
       if (title && title.classList.contains('section-title')) title.style.display = anyVisible ? '' : 'none';
     });
   }
-
-  probeCards();
-  setInterval(probeCards, PROBE_INTERVAL_MS);
 </script>
 
 </body>

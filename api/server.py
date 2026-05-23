@@ -4,8 +4,24 @@ import os
 import socket
 import ssl
 import threading
+import yaml
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import urlparse, parse_qs
+
+MAPA_PATH = '/app/mapa.yaml'
+SERVER_ID  = os.environ.get('SERVER_ID', socket.gethostname())
+
+
+def get_mapa():
+    with open(MAPA_PATH) as f:
+        mapa = yaml.safe_load(f)
+    node = mapa.get(SERVER_ID, {})
+    return {
+        'hostname': SERVER_ID,
+        'servidor': node.get('servidor', ''),
+        'ip':       node.get('ip', ''),
+        'sistemas': node.get('sistemas', {}),
+    }
 
 DOCKER_SOCK = '/var/run/docker.sock'
 
@@ -138,6 +154,9 @@ class Handler(BaseHTTPRequestHandler):
                 qs = parse_qs(u.query)
                 urls = qs.get('url', [])
                 self._send_json(200, get_probe(urls))
+                return
+            if u.path == '/mapa':
+                self._send_json(200, get_mapa())
                 return
             self.send_response(404)
             self.end_headers()
