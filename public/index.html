@@ -175,10 +175,25 @@
       width: 7px;
       height: 7px;
       border-radius: 50%;
-      background: var(--accent-h);
+      background: var(--muted);
       flex-shrink: 0;
-      box-shadow: 0 0 6px var(--accent-h);
+      box-shadow: none;
       margin-left: auto;
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+    .status-dot.online {
+      background: var(--accent-h);
+      box-shadow: 0 0 6px var(--accent-h);
+    }
+    .status-dot.offline {
+      background: #f85149;
+      box-shadow: 0 0 4px rgba(248,81,73,0.6);
+    }
+    .card.offline {
+      opacity: 0.55;
+    }
+    .card.offline:hover {
+      opacity: 0.85;
     }
 
     footer {
@@ -204,7 +219,7 @@
 <div class="section-title" style="max-width:1200px;margin:0 auto 1rem;">Full-stack</div>
 <div class="grid">
 
-  <a class="card" href="http://192.168.0.148:3322" target="_blank">
+  <a class="card" href="http://192.168.0.170:3322" target="_blank">
     <div class="card-header">
       <div class="card-name">HR Platform</div>
       <div class="card-port">:3322 / :8313</div>
@@ -217,7 +232,7 @@
     </div>
   </a>
 
-  <a class="card" href="http://192.168.0.148:3317" target="_blank">
+  <a class="card" href="http://192.168.0.170:3317" target="_blank">
     <div class="card-header">
       <div class="card-name">Dinâmica Martinelli</div>
       <div class="card-port">:3317 / :8317</div>
@@ -230,7 +245,7 @@
     </div>
   </a>
 
-  <a class="card" href="http://192.168.0.148:3321" target="_blank">
+  <a class="card" href="http://192.168.0.170:3321" target="_blank">
     <div class="card-header">
       <div class="card-name">Visões de Futuro</div>
       <div class="card-port">:3321 / :8310</div>
@@ -243,7 +258,7 @@
     </div>
   </a>
 
-  <a class="card" href="http://192.168.0.148:3320" target="_blank">
+  <a class="card" href="http://192.168.0.170:3320" target="_blank">
     <div class="card-header">
       <div class="card-name">Gestão de Alocação</div>
       <div class="card-port">:3320</div>
@@ -262,7 +277,7 @@
 <div class="section-title" style="max-width:1200px;margin:0 auto 1rem;">Backend / API</div>
 <div class="grid">
 
-  <a class="card" href="http://192.168.0.148:3316" target="_blank">
+  <a class="card" href="http://192.168.0.170:3316" target="_blank">
     <div class="card-header">
       <div class="card-name">RBAC / ABAC</div>
       <div class="card-port">:3316</div>
@@ -275,7 +290,7 @@
     </div>
   </a>
 
-  <a class="card" href="http://192.168.0.148:8080" target="_blank">
+  <a class="card" href="http://192.168.0.170:8080" target="_blank">
     <div class="card-header">
       <div class="card-name">Hub Martinelli</div>
       <div class="card-port">:8080</div>
@@ -295,7 +310,7 @@
 <div class="section-title" style="max-width:1200px;margin:0 auto 1rem;">Ferramentas / IA</div>
 <div class="grid">
 
-  <a class="card" href="http://192.168.0.148:3313" target="_blank">
+  <a class="card" href="http://192.168.0.170:3313" target="_blank">
     <div class="card-header">
       <div class="card-name">Treinamentos IA</div>
       <div class="card-port">:3313</div>
@@ -307,7 +322,7 @@
     </div>
   </a>
 
-  <a class="card" href="http://192.168.0.148:3318" target="_blank">
+  <a class="card" href="http://192.168.0.170:3318" target="_blank">
     <div class="card-header">
       <div class="card-name">Gestão à Vista</div>
       <div class="card-port">:3318</div>
@@ -320,7 +335,7 @@
     </div>
   </a>
 
-  <a class="card" href="http://192.168.0.148:3319" target="_blank">
+  <a class="card" href="http://192.168.0.170:3319" target="_blank">
     <div class="card-header">
       <div class="card-name">Sistemas / Hierarquia</div>
       <div class="card-port">:3319</div>
@@ -333,12 +348,26 @@
     </div>
   </a>
 
+  <a class="card" href="https://192.168.0.170:18443/chat" target="_blank">
+    <div class="card-header">
+      <div class="card-name">MCH — Martinelli Chat</div>
+      <div class="card-port">:18443</div>
+    </div>
+    <div class="card-desc">Martinelli Chat — Next.js + FastAPI + LLM (Ollama/Anthropic/Gemini) sobre HTTPS.</div>
+    <div class="card-footer">
+      <span class="tag full">Next.js</span>
+      <span class="tag backend">FastAPI</span>
+      <span class="tag ia">LLM</span>
+      <div class="status-dot"></div>
+    </div>
+  </a>
+
 </div>
 
 <div class="section-title" style="max-width:1200px;margin:0 auto 1rem;">Infraestrutura</div>
 <div class="grid">
 
-  <a class="card" href="http://192.168.0.148:3323" target="_blank">
+  <a class="card" href="http://192.168.0.170:3323" target="_blank">
     <div class="card-header">
       <div class="card-name">Netdata</div>
       <div class="card-port">:3323</div>
@@ -368,7 +397,7 @@
   const host = window.location.hostname;
   document.getElementById('host-info').textContent = host;
   document.querySelectorAll('a.card').forEach(a => {
-    a.href = a.href.replace('192.168.0.148', host);
+    a.href = a.href.replace('192.168.0.170', host);
   });
 
   // ── Docker resource stats ──────────────────────────────────────────────
@@ -471,6 +500,44 @@
   };
   fmt();
   setInterval(fmt, 1000);
+
+  // ── Probe dinâmico de disponibilidade dos cards ──
+  const PROBE_INTERVAL_MS = 30000;
+
+  async function probeCards() {
+    const cards = Array.from(document.querySelectorAll('a.card[href^="http"]'));
+    if (!cards.length) return;
+    const urls = cards.map(c => c.getAttribute('href'));
+    const qs = urls.map(u => 'url=' + encodeURIComponent(u)).join('&');
+    let data = {};
+    try {
+      const r = await fetch('/api/probe?' + qs, { cache: 'no-store' });
+      data = await r.json();
+    } catch (_) { return; }
+    cards.forEach(c => {
+      const u = c.getAttribute('href');
+      const dot = c.querySelector('.status-dot');
+      const ok = data[u] === true;
+      if (dot) {
+        dot.classList.toggle('online', ok);
+        dot.title = 'Online';
+      }
+      c.style.display = ok ? '' : 'none';
+    });
+    // Esconde seções (.section-title + .grid) sem nenhum card visível.
+    document.querySelectorAll('.grid').forEach(grid => {
+      const anyVisible = Array.from(grid.querySelectorAll('a.card'))
+        .some(c => c.style.display !== 'none');
+      grid.style.display = anyVisible ? '' : 'none';
+      const title = grid.previousElementSibling;
+      if (title && title.classList.contains('section-title')) {
+        title.style.display = anyVisible ? '' : 'none';
+      }
+    });
+  }
+
+  probeCards();
+  setInterval(probeCards, PROBE_INTERVAL_MS);
 </script>
 
 </body>

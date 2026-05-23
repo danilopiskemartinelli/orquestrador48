@@ -2,8 +2,10 @@ import http.client
 import json
 import os
 import socket
+import ssl
 import threading
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from urllib.parse import urlparse, parse_qs
 
 DOCKER_SOCK = '/var/run/docker.sock'
 
@@ -76,20 +78,69 @@ def get_stats():
     }
 
 
+def probe_url(url, timeout=2.0):
+    """Server-side probe: TCP connect + minimal HTTP HEAD. Ignora cert TLS."""
+    try:
+        u = urlparse(url)
+        host = u.hostname
+        port = u.port or (443 if u.scheme == 'https' else 80)
+        if not host:
+            return False
+        with socket.create_connection((host, port), timeout=timeout) as raw:
+            if u.scheme == 'https':
+                ctx = ssl._create_unverified_context()
+                sock = ctx.wrap_socket(raw, server_hostname=host)
+            else:
+                sock = raw
+            path = u.path or '/'
+            req = f"HEAD {path} HTTP/1.0\r\nHost: {host}\r\nConnection: close\r\n\r\n"
+            sock.sendall(req.encode())
+            data = sock.recv(64)
+            return data.startswith(b'HTTP/')
+    except Exception:
+        return False
+
+
+def get_probe(urls):
+    results = {}
+    lock = threading.Lock()
+
+    def fetch(u):
+        ok = probe_url(u)
+        with lock:
+            results[u] = ok
+
+    threads = [threading.Thread(target=fetch, args=(u,)) for u in urls]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join(timeout=3)
+    return results
+
+
 class Handler(BaseHTTPRequestHandler):
+    def _send_json(self, status, payload):
+        data = json.dumps(payload).encode()
+        self.send_response(status)
+        self.send_header('Content-Type', 'application/json')
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Content-Length', len(data))
+        self.end_headers()
+        self.wfile.write(data)
+
     def do_GET(self):
-        if self.path != '/stats':
+        u = urlparse(self.path)
+        try:
+            if u.path == '/stats':
+                self._send_json(200, get_stats())
+                return
+            if u.path == '/probe':
+                qs = parse_qs(u.query)
+                urls = qs.get('url', [])
+                self._send_json(200, get_probe(urls))
+                return
             self.send_response(404)
             self.end_headers()
-            return
-        try:
-            data = json.dumps(get_stats()).encode()
-            self.send_response(200)
-            self.send_header('Content-Type', 'application/json')
-            self.send_header('Access-Control-Allow-Origin', '*')
-            self.send_header('Content-Length', len(data))
-            self.end_headers()
-            self.wfile.write(data)
         except Exception as e:
             self.send_response(500)
             self.end_headers()
