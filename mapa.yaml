@@ -42,101 +42,114 @@ MTLADVL048:
         Backend:  {porta: null}
         DB:       {porta: null}
 
-    Monitor Linux:
-      pasta: monitor-linux
-      responsavel: "TI Team"
-      dns_exposto: false
-      endereco: null
-      descricao: "Monitoramento em tempo real — CPU, RAM, disco e métricas por container Docker."
-      categoria: "Infraestrutura"
-      tags: [Streamlit, Docker]
-      subdockers:
-        Unico: {porta: 3323}
-
 MTLADVL051:
   ip: "192.168.0.107"
   memoria: "8GB"
   servidor: "Deploy Linux"
   sistemas:
+    Consulta Itax:
+      pasta: consulta_itax
+      responsavel: "Bruno Brandão"
+      dns_exposto: true
+      endereco: consultadados.martinelli.adv.br
+      descricao: "Consulta automatizada de dados fiscais — interface Streamlit."
+      categoria: "Ferramentas / IA"
+      tags: [Streamlit, Python]
+      subdockers:
+        Unico: {porta: 8500}
+
     AzureGroups:
-      pasta: null
-      responsavel: "Christiano"
+      pasta: azure-groups
+      responsavel: "Chris"
       dns_exposto: true
       endereco: azgroups.martinelli.adv.br
       descricao: "Sincronização e gerenciamento de grupos Azure AD — automação de acessos e permissões."
       categoria: "Backend / API"
       tags: [Azure, Python]
-      subdockers: {}
+      subdockers:
+        Unico: {porta: 8080}
 
-    Visoes de Futuro:
-      pasta: null
+    Amigo Oculto Visoes de Futuro:
+      pasta: amigo-oculto-visoes-de-futuro
       responsavel: "TI Team"
       dns_exposto: true
       endereco: visoesdefuturo.martinelli.adv.br
       descricao: "Sistema de Amigo Oculto — sorteio, envio de e-mails e respostas de participantes."
       categoria: "Full-stack"
       tags: [Next.js, FastAPI]
-      subdockers: {}
+      subdockers:
+        Frontend: {porta: 3321}
+        Backend:  {porta: 8310}
 
     Perfil Visoes de Futuro:
-      pasta: null
+      pasta: perfil-visoes-de-futuro
       responsavel: "TI Team"
       dns_exposto: true
       endereco: perfilvisoesdefuturo.martinelli.adv.br
       descricao: "Persona IA para o sistema Visões de Futuro — geração de perfis comportamentais."
       categoria: "Ferramentas / IA"
       tags: [FastAPI, LLM]
-      subdockers: {}
+      subdockers:
+        Frontend: {porta: 3317}
+        Backend:  {porta: 8317}
+
+    Academia:
+      pasta: academia
+      responsavel: "TI Team"
+      dns_exposto: false
+      endereco: null
+      descricao: "Jogos educativos internos — frontends Vite/Next."
+      categoria: "Full-stack"
+      tags: [Vite, Next.js]
+      subdockers:
+        Game 1: {porta: 3315}
+        Game 2: {porta: 3314}
 
     Techweek Prototipos:
-      pasta: null
+      pasta: techweek
       responsavel: "TI Team"
       dns_exposto: false
       endereco: null
       descricao: "Protótipos desenvolvidos durante a Techweek interna Martinelli."
       categoria: "Full-stack"
       tags: []
-      subdockers: {}
+      subdockers:
+        Ctf01 Frontend:  {porta: 3311}
+        Ctf01 Backend:   {porta: 8311}
+        Prompt Frontend: {porta: 3312}
+        Prompt Backend:  {porta: 8312}
 
     Hub Homolog Antigo:
-      pasta: null
+      pasta: hub-servicos
       responsavel: "TI Team"
       dns_exposto: true
       endereco: homologahubti.martinelli.adv.br
       descricao: "Ambiente de homologação do Hub Martinelli — versão legada em manutenção."
       categoria: "Full-stack"
-      tags: [Next.js, FastAPI]
-      subdockers: {}
-
-    Gestao de Alocacao:
-      pasta: null
-      responsavel: "TI Team"
-      dns_exposto: false
-      endereco: null
-      descricao: "Controle de alocação de equipes e recursos por projeto e departamento."
-      categoria: "Full-stack"
-      tags: [Next.js, PostgreSQL]
-      subdockers: {}
-
-    Monitor Linux:
-      pasta: monitor-linux
-      responsavel: "TI Team"
-      dns_exposto: false
-      endereco: null
-      descricao: "Monitoramento em tempo real — CPU, RAM, disco e métricas por container Docker."
-      categoria: "Infraestrutura"
-      tags: [Streamlit, Docker]
+      tags: [Panel, Python, MySQL]
       subdockers:
-        Unico: {porta: 3323}
+        Frontend: {porta: 8501}
+        Backend:  {porta: 3306}
+
+    Treinamentos IA:
+      pasta: treinamentos-ia
+      responsavel: "TI Team"
+      dns_exposto: true
+      endereco: null
+      descricao: "Plataforma de trilhas de treinamento gamificadas com IA."
+      categoria: "Ferramentas / IA"
+      tags: [Next.js, Prisma]
+      subdockers:
+        Unico: {porta: 3313}
 
 MTLADVL063:
   ip: "192.168.0.170"
   memoria: "8GB"
   servidor: "Dev Linux"
   sistemas:
-    Aura IA by Martinelli:
+    Aura IA by Martinelli (Provisorio):
       pasta: auramartinelli
-      responsavel: "TI Team"
+      responsavel: "Danilo"
       dns_exposto: false
       endereco: null
       descricao: "Martinelli Chat — Next.js + FastAPI + LLM (Ollama/Anthropic/Gemini) sobre HTTPS."
@@ -153,8 +166,8 @@ MTLADVL063:
         Vault:      {porta: 8200}
 
     Martinelli Access:
-      pasta: access-martinelli
-      responsavel: "TI Team"
+      pasta: accessmartinelli
+      responsavel: "Danilo"
       dns_exposto: false
       endereco: null
       descricao: "Motor de autorização baseado em papéis e atributos — API centralizada de permissões."
@@ -167,7 +180,7 @@ MTLADVL063:
 
     Hub Martinelli 2.0:
       pasta: hub-martinelli-2
-      responsavel: "TI Team"
+      responsavel: "Caetano"
       dns_exposto: false
       endereco: null
       descricao: "Hub de serviços Martinelli v2 — gateway nginx + backend de plugins + frontend."
@@ -176,7 +189,7 @@ MTLADVL063:
       subdockers:
         Gateway:  {porta: 3314}
         Backend:  {porta: 8314}
-        Frontend: {porta: null}
+        Frontend: {porta: 3000}
 
     Martinelli Recruit:
       pasta: recruit-martinelli
@@ -206,7 +219,7 @@ MTLADVL063:
         Backend:  {porta: 8315}
 
     Monitor Linux:
-      pasta: monitor-linux
+      pasta: monitor
       responsavel: "TI Team"
       dns_exposto: false
       endereco: null
@@ -214,4 +227,4 @@ MTLADVL063:
       categoria: "Infraestrutura"
       tags: [Streamlit, Docker]
       subdockers:
-        Unico: {porta: 3323}
+        Único: {porta: 3323}
