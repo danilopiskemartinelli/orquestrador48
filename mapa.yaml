@@ -93,31 +93,51 @@ MTLADVL051:
         Frontend: {porta: 3317}
         Backend:  {porta: 8317}
 
-    Academia:
-      pasta: academia
+    Academia - Game 1:
+      pasta: academia/martinelli_game1
       responsavel: "TI Team"
       dns_exposto: false
       endereco: null
-      descricao: "Jogos educativos internos — frontends Vite/Next."
+      descricao: "Jogo educativo interno #1 — frontend Vite/React."
       categoria: "Full-stack"
-      tags: [Vite, Next.js]
+      tags: [Vite, React]
       subdockers:
-        Game 1: {porta: 3315}
-        Game 2: {porta: 3314}
+        Unico: {porta: 3315}
 
-    Techweek Prototipos:
-      pasta: techweek
+    Academia - Game 2:
+      pasta: academia/martinelli_game2
       responsavel: "TI Team"
       dns_exposto: false
       endereco: null
-      descricao: "Protótipos desenvolvidos durante a Techweek interna Martinelli."
+      descricao: "Jogo educativo interno #2 — frontend Next.js."
       categoria: "Full-stack"
-      tags: []
+      tags: [Next.js]
       subdockers:
-        Ctf01 Frontend:  {porta: 3311}
-        Ctf01 Backend:   {porta: 8311}
-        Prompt Frontend: {porta: 3312}
-        Prompt Backend:  {porta: 8312}
+        Unico: {porta: 3314}
+
+    Techweek - Ctf01:
+      pasta: techweek/01-ctf
+      responsavel: "TI Team"
+      dns_exposto: false
+      endereco: null
+      descricao: "Protótipo CTF da Techweek — frontend + backend."
+      categoria: "Full-stack"
+      tags: [Next.js, FastAPI]
+      subdockers:
+        Frontend: {porta: 3311}
+        Backend:  {porta: 8311}
+
+    Techweek - Prompt Lab:
+      pasta: techweek/02-prompt-lab
+      responsavel: "TI Team"
+      dns_exposto: false
+      endereco: null
+      descricao: "Protótipo Prompt Lab da Techweek — frontend + backend."
+      categoria: "Full-stack"
+      tags: [Next.js, FastAPI]
+      subdockers:
+        Frontend: {porta: 3312}
+        Backend:  {porta: 8312}
 
     Hub Homolog Antigo:
       pasta: hub-servicos
