@@ -248,3 +248,15 @@ MTLADVL063:
       tags: [Streamlit, Docker]
       subdockers:
         Único: {porta: 3323}
+
+    Bolao Copa 2026:
+      pasta: bolao-martinelli
+      responsavel: "Danilo"
+      dns_exposto: false
+      endereco: null
+      descricao: "Bolão da Copa do Mundo 2026 — palpites, fichas/odds, ranking individual e por grupos, integração ESPN/Brasileirão."
+      categoria: "Full-stack"
+      tags: [Next.js, FastAPI, SQLite]
+      subdockers:
+        Frontend: {porta: 3324}
+        Backend:  {porta: 8324}
