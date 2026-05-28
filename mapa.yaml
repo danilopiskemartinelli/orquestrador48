@@ -1,262 +1,359 @@
 MTLADVL048:
-  ip: "192.168.0.148"
-  memoria: "16GB"
-  servidor: "Certificados"
+  ip: 192.168.0.148
+  memoria: 16GB
+  servidor: Certificados
   sistemas:
     MartiCerts:
       pasta: marticerts
-      responsavel: "TI Team"
+      responsavel: TI Team
       dns_exposto: true
       endereco: marticerts.martinelli.adv.br
-      descricao: "Plataforma de certificados digitais — emissão, renovação e gestão de acessos via VPN."
-      categoria: "Full-stack"
-      tags: [Next.js, FastAPI, Vault]
+      descricao: Plataforma de certificados digitais — emissão, renovação e gestão
+        de acessos via VPN.
+      categoria: Full-stack
+      tags:
+      - Next.js
+      - FastAPI
+      - Vault
       subdockers:
-        Principal:  {porta: 9443}
-        Frontend:   {porta: 3000}
-        Middleware: {porta: 8000}
-        DB:         {porta: 3306}
-        Portainer:  {porta: 9000}
-
+        Principal:
+          porta: 9443
+        Frontend:
+          porta: 3000
+        Middleware:
+          porta: 8000
+        DB:
+          porta: 3306
+        Portainer:
+          porta: 9000
     Gestao a Vista:
       pasta: gestao-a-vista
-      responsavel: "TI Team"
+      responsavel: TI Team
       dns_exposto: false
       endereco: null
-      descricao: "Dashboard analítico de chamados e atividades — BI operacional via Streamlit."
-      categoria: "Ferramentas / IA"
-      tags: [Streamlit, Python]
+      descricao: Dashboard analítico de chamados e atividades — BI operacional via
+        Streamlit.
+      categoria: Ferramentas / IA
+      tags:
+      - Streamlit
+      - Python
       subdockers:
-        Unico: {porta: 3318}
-
+        Unico:
+          porta: 3318
     Gestao de Alocacao:
       pasta: gestao-alocacao-martinelli
-      responsavel: "TI Team"
+      responsavel: TI Team
       dns_exposto: false
       endereco: null
-      descricao: "Controle de alocação de equipes e recursos por projeto e departamento."
-      categoria: "Full-stack"
-      tags: [Next.js, PostgreSQL]
+      descricao: Controle de alocação de equipes e recursos por projeto e departamento.
+      categoria: Full-stack
+      tags:
+      - Next.js
+      - PostgreSQL
       subdockers:
-        Frontend: {porta: 3320}
-        Backend:  {porta: null}
-        DB:       {porta: null}
-
+        Frontend:
+          porta: 3320
+        Backend:
+          porta: null
+        DB:
+          porta: null
 MTLADVL051:
-  ip: "192.168.0.107"
-  memoria: "8GB"
-  servidor: "Deploy Linux"
+  ip: 192.168.0.107
+  memoria: 8GB
+  servidor: Deploy Linux
   sistemas:
     Consulta Itax:
       pasta: consulta_itax
-      responsavel: "Bruno Brandão"
+      responsavel: Bruno Brandão
       dns_exposto: true
       endereco: consultadados.martinelli.adv.br
-      descricao: "Consulta automatizada de dados fiscais — interface Streamlit."
-      categoria: "Ferramentas / IA"
-      tags: [Streamlit, Python]
+      descricao: Consulta automatizada de dados fiscais — interface Streamlit.
+      categoria: Ferramentas / IA
+      tags:
+      - Streamlit
+      - Python
       subdockers:
-        Unico: {porta: 8500}
-
+        Unico:
+          porta: 8500
     AzureGroups:
       pasta: azure-groups
-      responsavel: "Christiano"
+      responsavel: Christiano
       dns_exposto: true
       endereco: azgroups.martinelli.adv.br
-      descricao: "Sincronização e gerenciamento de grupos Azure AD — automação de acessos e permissões."
-      categoria: "Backend / API"
-      tags: [Azure, Python]
+      descricao: Sincronização e gerenciamento de grupos Azure AD — automação de acessos
+        e permissões.
+      categoria: Backend / API
+      tags:
+      - Azure
+      - Python
       subdockers:
-        Unico: {porta: 8080}
-
+        Unico:
+          porta: 8080
     Amigo Oculto Visoes de Futuro:
       pasta: amigo-oculto-visoes-de-futuro
-      responsavel: "TI Team"
+      responsavel: TI Team
       dns_exposto: true
       endereco: visoesdefuturo.martinelli.adv.br
-      descricao: "Sistema de Amigo Oculto — sorteio, envio de e-mails e respostas de participantes."
-      categoria: "Full-stack"
-      tags: [Next.js, FastAPI]
+      descricao: Sistema de Amigo Oculto — sorteio, envio de e-mails e respostas de
+        participantes.
+      categoria: Full-stack
+      tags:
+      - Next.js
+      - FastAPI
       subdockers:
-        Frontend: {porta: 3321}
-        Backend:  {porta: 8310}
-
+        Frontend:
+          porta: 3321
+        Backend:
+          porta: 8310
     Perfil Visoes de Futuro:
       pasta: perfil-visoes-de-futuro
-      responsavel: "TI Team"
+      responsavel: TI Team
       dns_exposto: true
       endereco: perfilvisoesdefuturo.martinelli.adv.br
-      descricao: "Persona IA para o sistema Visões de Futuro — geração de perfis comportamentais."
-      categoria: "Ferramentas / IA"
-      tags: [FastAPI, LLM]
+      descricao: Persona IA para o sistema Visões de Futuro — geração de perfis comportamentais.
+      categoria: Ferramentas / IA
+      tags:
+      - FastAPI
+      - LLM
       subdockers:
-        Frontend: {porta: 3317}
-        Backend:  {porta: 8317}
-
+        Frontend:
+          porta: 3317
+        Backend:
+          porta: 8317
     Academia - Game 1:
       pasta: academia/martinelli_game1
-      responsavel: "TI Team"
+      responsavel: TI Team
       dns_exposto: false
       endereco: null
-      descricao: "Jogo educativo interno #1 — frontend Vite/React."
-      categoria: "Full-stack"
-      tags: [Vite, React]
+      descricao: 'Jogo educativo interno #1 — frontend Vite/React.'
+      categoria: Full-stack
+      tags:
+      - Vite
+      - React
       subdockers:
-        Unico: {porta: 3315}
-
+        Unico:
+          porta: 3315
     Academia - Game 2:
       pasta: academia/martinelli_game2
-      responsavel: "TI Team"
+      responsavel: TI Team
       dns_exposto: false
       endereco: null
-      descricao: "Jogo educativo interno #2 — frontend Next.js."
-      categoria: "Full-stack"
-      tags: [Next.js]
+      descricao: 'Jogo educativo interno #2 — frontend Next.js.'
+      categoria: Full-stack
+      tags:
+      - Next.js
       subdockers:
-        Unico: {porta: 3314}
-
+        Unico:
+          porta: 3314
     Techweek - Ctf01:
       pasta: techweek/01-ctf
-      responsavel: "TI Team"
+      responsavel: TI Team
       dns_exposto: false
       endereco: null
-      descricao: "Protótipo CTF da Techweek — frontend + backend."
-      categoria: "Full-stack"
-      tags: [Next.js, FastAPI]
+      descricao: Protótipo CTF da Techweek — frontend + backend.
+      categoria: Full-stack
+      tags:
+      - Next.js
+      - FastAPI
       subdockers:
-        Frontend: {porta: 3311}
-        Backend:  {porta: 8311}
-
+        Frontend:
+          porta: 3311
+        Backend:
+          porta: 8311
     Techweek - Prompt Lab:
       pasta: techweek/02-prompt-lab
-      responsavel: "TI Team"
+      responsavel: TI Team
       dns_exposto: false
       endereco: null
-      descricao: "Protótipo Prompt Lab da Techweek — frontend + backend."
-      categoria: "Full-stack"
-      tags: [Next.js, FastAPI]
+      descricao: Protótipo Prompt Lab da Techweek — frontend + backend.
+      categoria: Full-stack
+      tags:
+      - Next.js
+      - FastAPI
       subdockers:
-        Frontend: {porta: 3312}
-        Backend:  {porta: 8312}
-
+        Frontend:
+          porta: 3312
+        Backend:
+          porta: 8312
     Hub Homolog Antigo:
       pasta: hub-servicos
-      responsavel: "TI Team"
+      responsavel: TI Team
       dns_exposto: true
       endereco: homologahubti.martinelli.adv.br
-      descricao: "Ambiente de homologação do Hub Martinelli — versão legada em manutenção."
-      categoria: "Full-stack"
-      tags: [Panel, Python, MySQL]
+      descricao: Ambiente de homologação do Hub Martinelli — versão legada em manutenção.
+      categoria: Full-stack
+      tags:
+      - Panel
+      - Python
+      - MySQL
       subdockers:
-        Frontend: {porta: 8501}
-        Backend:  {porta: 3306}
-
+        Frontend:
+          porta: 8501
+        Backend:
+          porta: 3306
     Treinamentos IA:
       pasta: treinamentos-ia
-      responsavel: "TI Team"
+      responsavel: TI Team
       dns_exposto: true
       endereco: null
-      descricao: "Plataforma de trilhas de treinamento gamificadas com IA."
-      categoria: "Ferramentas / IA"
-      tags: [Next.js, Prisma]
+      descricao: Plataforma de trilhas de treinamento gamificadas com IA.
+      categoria: Ferramentas / IA
+      tags:
+      - Next.js
+      - Prisma
       subdockers:
-        Unico: {porta: 3313}
-
+        Unico:
+          porta: 3313
+    Onboarding IA:
+      pasta: onboarding-ia
+      responsavel: TI Team
+      dns_exposto: false
+      endereco: null
+      descricao: Sistema de Onboarding sobre IA's
+      categoria: Full-stack
+      tags:
+      - Next.Js
+      subdockers: {}
 MTLADVL063:
-  ip: "192.168.0.170"
-  memoria: "8GB"
-  servidor: "Dev Linux"
+  ip: 192.168.0.170
+  memoria: 8GB
+  servidor: Dev Linux
   sistemas:
     Aura IA by Martinelli (Provisorio):
       pasta: auramartinelli
-      responsavel: "Danilo"
+      responsavel: Danilo
       dns_exposto: false
       endereco: null
-      descricao: "Martinelli Chat — Next.js + FastAPI + LLM (Ollama/Anthropic/Gemini) sobre HTTPS."
-      categoria: "Ferramentas / IA"
-      tags: [Next.js, FastAPI, LLM, Ollama]
+      descricao: Martinelli Chat — Next.js + FastAPI + LLM (Ollama/Anthropic/Gemini)
+        sobre HTTPS.
+      categoria: Ferramentas / IA
+      tags:
+      - Next.js
+      - FastAPI
+      - LLM
+      - Ollama
       subdockers:
-        Principal:  {porta: 18443}
-        Middleware: {porta: 8311}
-        Frontend:   {porta: 18001}
-        DB:         {porta: 18306}
-        Portainer:  {porta: 19000}
-        Ollama:     {porta: 16333}
-        Qdrant:     {porta: 11434}
-        Vault:      {porta: 8200}
-
+        Principal:
+          porta: 18443
+        Middleware:
+          porta: 8311
+        Frontend:
+          porta: 18001
+        DB:
+          porta: 18306
+        Portainer:
+          porta: 19000
+        Ollama:
+          porta: 16333
+        Qdrant:
+          porta: 11434
+        Vault:
+          porta: 8200
     Martinelli Access:
       pasta: accessmartinelli
-      responsavel: "Danilo"
+      responsavel: Danilo
       dns_exposto: false
       endereco: null
-      descricao: "Motor de autorização baseado em papéis e atributos — API centralizada de permissões."
-      categoria: "Backend / API"
-      tags: [Next.js, Node.js, MySQL]
+      descricao: Motor de autorização baseado em papéis e atributos — API centralizada
+        de permissões.
+      categoria: Backend / API
+      tags:
+      - Next.js
+      - Node.js
+      - MySQL
       subdockers:
-        Frontend: {porta: 3316}
-        Backend:  {porta: 8312}
-        Mysql:    {porta: 3326}
-
+        Frontend:
+          porta: 3316
+        Backend:
+          porta: 8312
+        Mysql:
+          porta: 3326
     Hub Martinelli 2.0:
       pasta: hub-martinelli-2
-      responsavel: "Caetano"
+      responsavel: Caetano
       dns_exposto: false
       endereco: null
-      descricao: "Hub de serviços Martinelli v2 — gateway nginx + backend de plugins + frontend."
-      categoria: "Full-stack"
-      tags: [Next.js, FastAPI, nginx]
+      descricao: Hub de serviços Martinelli v2 — gateway nginx + backend de plugins
+        + frontend.
+      categoria: Full-stack
+      tags:
+      - Next.js
+      - FastAPI
+      - nginx
       subdockers:
-        Gateway:  {porta: 3314}
-        Backend:  {porta: 8314}
-        Frontend: {porta: 3000}
-
+        Gateway:
+          porta: 3314
+        Backend:
+          porta: 8314
+        Frontend:
+          porta: 3000
     Martinelli Recruit:
       pasta: recruit-martinelli
-      responsavel: "TI Team"
+      responsavel: TI Team
       dns_exposto: false
       endereco: null
-      descricao: "Plataforma de RH — gestão de colaboradores, vagas e processos seletivos."
-      categoria: "Full-stack"
-      tags: [Next.js, FastAPI, PostgreSQL, Redis]
+      descricao: Plataforma de RH — gestão de colaboradores, vagas e processos seletivos.
+      categoria: Full-stack
+      tags:
+      - Next.js
+      - FastAPI
+      - PostgreSQL
+      - Redis
       subdockers:
-        Web:      {porta: 3313}
-        API:      {porta: 8313}
-        Worker:   {porta: 8000}
-        Postgres: {porta: 5432}
-        Redis:    {porta: 6379}
-
+        Web:
+          porta: 3313
+        API:
+          porta: 8313
+        Worker:
+          porta: 8000
+        Postgres:
+          porta: 5432
+        Redis:
+          porta: 6379
     Sistemas Hierarquia:
       pasta: hierarquia-martinelli
-      responsavel: "Carlos"
+      responsavel: Carlos
       dns_exposto: false
       endereco: null
-      descricao: "Mapa hierárquico de sistemas — visualização de dependências e estrutura organizacional."
-      categoria: "Ferramentas / IA"
-      tags: [Static, nginx]
+      descricao: Mapa hierárquico de sistemas — visualização de dependências e estrutura
+        organizacional.
+      categoria: Ferramentas / IA
+      tags:
+      - Static
+      - nginx
       subdockers:
-        Frontend: {porta: 3315}
-        Backend:  {porta: 8315}
-
+        Frontend:
+          porta: 3315
+        Backend:
+          porta: 8315
     Monitor Linux:
       pasta: monitor
-      responsavel: "TI Team"
+      responsavel: TI Team
       dns_exposto: false
       endereco: null
-      descricao: "Monitoramento em tempo real — CPU, RAM, disco e métricas por container Docker."
-      categoria: "Infraestrutura"
-      tags: [Streamlit, Docker]
+      descricao: Monitoramento em tempo real — CPU, RAM, disco e métricas por container
+        Docker.
+      categoria: Infraestrutura
+      tags:
+      - Streamlit
+      - Docker
       subdockers:
-        Único: {porta: 3323}
-
+        Único:
+          porta: 3323
     Bolao Copa 2026:
       pasta: bolao-martinelli
-      responsavel: "Danilo"
+      responsavel: Danilo
       dns_exposto: false
       endereco: null
-      descricao: "Bolão da Copa do Mundo 2026 — palpites, fichas/odds, ranking individual e por grupos, integração ESPN/Brasileirão."
-      categoria: "Full-stack"
-      tags: [Next.js, FastAPI, SQLite]
+      descricao: Bolão da Copa do Mundo 2026 — palpites, fichas/odds, ranking individual
+        e por grupos, integração ESPN/Brasileirão.
+      categoria: Full-stack
+      tags:
+      - Next.js
+      - FastAPI
+      - SQLite
       subdockers:
-        Frontend: {porta: 3324}
-        Backend:  {porta: 8324}
+        Frontend:
+          porta: 3324
+        Backend:
+          porta: 8324
