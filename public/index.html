@@ -694,58 +694,30 @@
       </a>`;
   }
 
-  // ── render single node ────────────────────────────────────────────────────
+  function renderMapa(data) {
+    const nodes = Array.isArray(data) ? data : [data];
+    const isMaster = Array.isArray(data);
 
-  function renderNodeSystems(nodeData, container, showServerHeader) {
-    const { ip, servidor, sistemas } = nodeData;
+    if (isMaster) {
+      document.getElementById('mode-badge').textContent = 'master';
+      document.getElementById('mode-badge').classList.add('master');
+      if (!window._formInited) { initForm(nodes); window._formInited = true; }
+    }
+
     const main = [], monitor = [];
-
-    for (const [nome, s] of Object.entries(sistemas)) {
-      const item = { nome, ...s };
-      if (s.categoria === 'Infraestrutura') monitor.push(item);
-      else main.push(item);
+    for (const node of nodes) {
+      for (const [nome, s] of Object.entries(node.sistemas || {})) {
+        const item = { nome, ...s, _ip: node.ip };
+        if (s.categoria === 'Infraestrutura') monitor.push(item);
+        else main.push(item);
+      }
     }
 
     let html = '';
+    if (main.length)    html += `<div class="section-title">Sistemas</div><div class="grid-full">${main.map(s => makeCard(s, s._ip)).join('')}</div>`;
+    if (monitor.length) html += `<div class="section-title" style="margin-top:1rem;">Monitor</div><div class="grid-full">${monitor.map(s => makeCard(s, s._ip)).join('')}</div>`;
 
-    if (showServerHeader) {
-      html += `<div class="server-block">
-        <div class="server-header">
-          <span class="server-name">${servidor}</span>
-          <span class="server-ip">${ip}</span>
-          <span class="server-label">${nodeData.hostname}</span>
-        </div>`;
-    }
-
-    if (main.length) {
-      html += showServerHeader
-        ? `<div class="section-title">Sistemas</div><div class="grid">${main.map(s => makeCard(s, ip)).join('')}</div>`
-        : `<div class="section-title">Sistemas</div><div class="grid-full">${main.map(s => makeCard(s, ip)).join('')}</div>`;
-    }
-    if (monitor.length) {
-      html += showServerHeader
-        ? `<div class="section-title" style="margin-top:1rem;">Monitor</div><div class="grid">${monitor.map(s => makeCard(s, ip)).join('')}</div>`
-        : `<div class="section-title" style="margin-top:1rem;">Monitor</div><div class="grid-full">${monitor.map(s => makeCard(s, ip)).join('')}</div>`;
-    }
-
-    if (showServerHeader) html += '</div>';
-
-    container.insertAdjacentHTML('beforeend', html);
-  }
-
-  function renderMapa(data) {
-    const container = document.getElementById('cards-container');
-    container.innerHTML = '';
-
-    if (Array.isArray(data)) {
-      document.getElementById('mode-badge').textContent = 'master';
-      document.getElementById('mode-badge').classList.add('master');
-      for (const node of data) renderNodeSystems(node, container, true);
-      if (!window._formInited) { initForm(data); window._formInited = true; }
-    } else {
-      renderNodeSystems(data, container, false);
-    }
-
+    document.getElementById('cards-container').innerHTML = html || '<div style="color:var(--text-tertiary);font-size:0.78rem;max-width:1200px;margin:0 auto;">Nenhum sistema encontrado.</div>';
     probeCards();
   }
 
@@ -804,34 +776,44 @@
   function renderStats(data) {
     const grid = document.getElementById('stats-grid');
 
-    if (data.nodes) {
-      // master mode
-      let html = '';
-      for (const [hostname, nodeStats] of Object.entries(data.nodes)) {
-        const { containers, system } = nodeStats;
-        html += `<div style="margin-bottom:1.5rem;">
-          <div class="stats-node-title">${hostname}</div>
-          <div style="display:flex;flex-direction:column;gap:0.4rem;">
-            <div style="display:grid;grid-template-columns:200px 1fr 1fr;gap:1rem;
-              font-size:0.63rem;text-transform:uppercase;letter-spacing:.8px;
-              color:var(--text-tertiary);padding:0 1.25rem 0.5rem;font-weight:600;">
-              <span>Container</span><span>CPU</span><span>RAM</span>
-            </div>
-            ${renderContainerList(containers, system)}
+    const allContainers = data.nodes
+      ? Object.values(data.nodes).flatMap(n => n.containers)
+      : data.containers;
+
+    const header = `
+      <div style="display:grid;grid-template-columns:200px 1fr 1fr;gap:1rem;
+        font-size:0.63rem;text-transform:uppercase;letter-spacing:.8px;
+        color:var(--text-tertiary);padding:0 1.25rem 0.5rem;font-weight:600;">
+        <span>Container</span><span>CPU</span><span>RAM</span>
+      </div>`;
+
+    if (!allContainers.length) {
+      grid.innerHTML = '<div style="color:var(--text-tertiary);font-size:0.78rem;">Nenhum container rodando.</div>';
+      return;
+    }
+
+    const maxCpu = Math.max(...allContainers.map(c => c.cpu_pct), 0.001);
+    const maxMem = Math.max(...allContainers.map(c => c.mem_bytes), 1);
+    const sorted = [...allContainers].sort((a, b) => b.mem_bytes - a.mem_bytes);
+
+    const rows = sorted.map(c => {
+      const cpuPct = (c.cpu_pct / maxCpu) * 100;
+      const memPct = (c.mem_bytes / maxMem) * 100;
+      return `
+        <div class="stats-row">
+          <div class="stats-name" title="${c.name}">${c.name}</div>
+          <div>
+            <div class="bar-label"><span>CPU</span><strong>${c.cpu_pct.toFixed(1)}%</strong></div>
+            <div class="bar-track"><div class="bar-fill" style="width:${cpuPct.toFixed(2)}%;background:${barColor(cpuPct)};"></div></div>
+          </div>
+          <div>
+            <div class="bar-label"><span>RAM</span><strong>${fmtBytes(c.mem_bytes)}</strong></div>
+            <div class="bar-track"><div class="bar-fill" style="width:${memPct.toFixed(2)}%;background:${barColor(memPct)};"></div></div>
           </div>
         </div>`;
-      }
-      grid.innerHTML = html || '<div style="color:var(--text-tertiary);font-size:0.78rem;">Nenhum nó respondeu.</div>';
-    } else {
-      const { containers, system } = data;
-      const header = `
-        <div style="display:grid;grid-template-columns:200px 1fr 1fr;gap:1rem;
-          font-size:0.63rem;text-transform:uppercase;letter-spacing:.8px;
-          color:var(--text-tertiary);padding:0 1.25rem 0.5rem;font-weight:600;">
-          <span>Container</span><span>CPU</span><span>RAM</span>
-        </div>`;
-      grid.innerHTML = `<div style="display:flex;flex-direction:column;gap:0.4rem;">${header}${renderContainerList(containers, system)}</div>`;
-    }
+    }).join('');
+
+    grid.innerHTML = `<div style="display:flex;flex-direction:column;gap:0.4rem;">${header}${rows}</div>`;
   }
 
   function loadStats() {
