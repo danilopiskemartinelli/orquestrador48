@@ -200,7 +200,7 @@ def probe_local(urls):
 
 async def _fetch(client: httpx.AsyncClient, hostname: str, ip: str, endpoint: str):
     try:
-        r = await client.get(f'http://{ip}:{NODE_PORT}/{endpoint}', timeout=2.0)
+        r = await client.get(f'http://{ip}:{NODE_PORT}/{endpoint}', timeout=4.0)
         return hostname, r.json()
     except Exception:
         return hostname, None
