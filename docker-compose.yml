@@ -17,7 +17,7 @@ services:
     ports:
       - "8900:8000"
     environment:
-      SERVER_ID: ${HOSTNAME:-MTLADVL063}
+      SERVER_ID: ${SERVER_ID:-MTLADVL063}
       # NODE_PORT: "8900"    # porta exposta dos outros nós (padrão 8900)
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
