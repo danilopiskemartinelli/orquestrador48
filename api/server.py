@@ -15,11 +15,30 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-SERVER_ID     = os.environ.get('SERVER_ID', socket.gethostname())
-NODE_PORT     = int(os.environ.get('NODE_PORT', '8900'))
-REPO_PATH     = '/app/repo' if os.path.isdir('/app/repo/.git') else None
-MAPA_PATH     = '/app/repo/mapa.yaml' if REPO_PATH else '/app/mapa.yaml'
+NODE_PORT = int(os.environ.get('NODE_PORT', '8900'))
+REPO_PATH = '/app/repo' if os.path.isdir('/app/repo/.git') else None
+MAPA_PATH = '/app/repo/mapa.yaml' if REPO_PATH else '/app/mapa.yaml'
 
+
+def _detect_server_id() -> str:
+    if sid := os.environ.get('SERVER_ID', ''):
+        return sid
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(('8.8.8.8', 80))
+        local_ip = s.getsockname()[0]
+        s.close()
+        with open(MAPA_PATH) as f:
+            mapa = yaml.safe_load(f)
+        for hostname, node in mapa.items():
+            if node.get('ip') == local_ip:
+                return hostname
+    except Exception:
+        pass
+    return socket.gethostname()
+
+
+SERVER_ID     = _detect_server_id()
 _MASTER_NODES = {'MTLADVL048'}
 _master_env   = os.environ.get('MASTER', '')
 MASTER        = (_master_env.lower() in ('1', 'true', 'yes')) if _master_env else (SERVER_ID in _MASTER_NODES)
