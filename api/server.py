@@ -205,14 +205,12 @@ async def _fetch(client: httpx.AsyncClient, hostname: str, ip: str, endpoint: st
     except Exception:
         return hostname, None
 
-async def mapa_master():
-    mapa   = load_mapa()
-    local  = [(h, None) for h, v in mapa.items() if h == SERVER_ID]
-    remote = [(h, v.get('ip', '')) for h, v in mapa.items() if h != SERVER_ID and v.get('ip')]
-    async with httpx.AsyncClient() as client:
-        remote_results = await asyncio.gather(*[_fetch(client, h, ip, 'mapa') for h, ip in remote])
-    results = [(h, mapa_local()) for h, _ in local] + list(remote_results)
-    return [data for _, data in results if data]
+def mapa_master():
+    mapa = load_mapa()
+    return [
+        {'hostname': h, 'servidor': v.get('servidor', ''), 'ip': v.get('ip', ''), 'sistemas': v.get('sistemas', {})}
+        for h, v in mapa.items()
+    ]
 
 async def stats_master():
     mapa   = load_mapa()
@@ -283,7 +281,7 @@ async def add_sistema(payload: SistemaPayload):
 @app.get('/mapa')
 async def route_mapa():
     if MASTER:
-        return await mapa_master()
+        return mapa_master()
     return mapa_local()
 
 @app.get('/stats')
