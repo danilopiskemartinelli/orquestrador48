@@ -21,4 +21,4 @@ services:
       # NODE_PORT: "8900"    # porta exposta dos outros nós (padrão 8900)
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./mapa.yaml:/app/mapa.yaml:ro
+      - .:/app/repo
