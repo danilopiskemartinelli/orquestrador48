@@ -70,27 +70,33 @@ def mapa_local():
 
 # ── git ───────────────────────────────────────────────────────────────────────
 
-def git_commit_push(message: str):
-    if not REPO_PATH:
-        raise RuntimeError('repositório não montado')
-
-    pat_path = os.path.join(REPO_PATH, '.ghpat')
-    pat      = open(pat_path).read().strip()
-
+def _git_auth_url():
+    pat      = open(os.path.join(REPO_PATH, '.ghpat')).read().strip()
     raw_url  = subprocess.check_output(
         ['git', '-C', REPO_PATH, 'remote', 'get-url', 'origin'], text=True
     ).strip()
-    auth_url = re.sub(r'https://([^@]+@)?', f'https://danilopiskemartinelli:{pat}@', raw_url)
+    return re.sub(r'https://([^@]+@)?', f'https://danilopiskemartinelli:{pat}@', raw_url)
 
-    env = {**os.environ, 'GIT_AUTHOR_NAME': 'Orchestrator', 'GIT_AUTHOR_EMAIL': 'orchestrator@martinelli.adv.br',
-           'GIT_COMMITTER_NAME': 'Orchestrator', 'GIT_COMMITTER_EMAIL': 'orchestrator@martinelli.adv.br'}
+_GIT_ENV = {**os.environ,
+            'GIT_AUTHOR_NAME':    'Orchestrator',
+            'GIT_AUTHOR_EMAIL':   'orchestrator@martinelli.adv.br',
+            'GIT_COMMITTER_NAME': 'Orchestrator',
+            'GIT_COMMITTER_EMAIL':'orchestrator@martinelli.adv.br'}
 
-    subprocess.run(['git', '-C', REPO_PATH, 'pull', '--rebase', auth_url, 'main'],
-                   env=env, check=True, capture_output=True)
+def git_pull():
+    if not REPO_PATH:
+        return
+    subprocess.run(['git', '-C', REPO_PATH, 'pull', '--rebase', _git_auth_url(), 'main'],
+                   env=_GIT_ENV, check=True, capture_output=True)
+
+def git_commit_push(message: str):
+    if not REPO_PATH:
+        raise RuntimeError('repositório não montado')
+    auth_url = _git_auth_url()
     subprocess.run(['git', '-C', REPO_PATH, 'add', 'mapa.yaml'],
                    check=True, capture_output=True)
     result = subprocess.run(['git', '-C', REPO_PATH, 'commit', '-m', message],
-                            env=env, capture_output=True, text=True)
+                            env=_GIT_ENV, capture_output=True, text=True)
     if result.returncode != 0 and 'nothing to commit' not in result.stdout + result.stderr:
         raise RuntimeError(result.stderr)
     subprocess.run(['git', '-C', REPO_PATH, 'push', auth_url, 'main'],
@@ -242,6 +248,11 @@ async def add_sistema(payload: SistemaPayload):
     if not MASTER:
         raise HTTPException(403, 'não autorizado')
 
+    loop = asyncio.get_event_loop()
+
+    # pull antes de modificar para evitar conflitos
+    await loop.run_in_executor(None, git_pull)
+
     mapa = load_mapa()
     if payload.hostname not in mapa:
         raise HTTPException(400, f'hostname {payload.hostname} não encontrado')
@@ -260,12 +271,8 @@ async def add_sistema(payload: SistemaPayload):
     }
 
     save_mapa(mapa)
-
-    loop = asyncio.get_event_loop()
-    await loop.run_in_executor(
-        None, git_commit_push,
-        f'feat(mapa): adiciona {payload.nome} em {payload.hostname}'
-    )
+    await loop.run_in_executor(None, git_commit_push,
+                               f'feat(mapa): adiciona {payload.nome} em {payload.hostname}')
 
     return {'ok': True}
 

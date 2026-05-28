@@ -627,6 +627,10 @@
 </div>
 
 <script>
+  const PROBE_INTERVAL_MS = 30000;
+  let   _mapaNodes        = [];
+  window._formInited      = false;
+
   document.getElementById('host-info').textContent = window.location.hostname;
 
   const el = document.getElementById('ts');
@@ -829,8 +833,6 @@
   setInterval(loadStats, 5000);
 
   // ── probe ─────────────────────────────────────────────────────────────────
-  const PROBE_INTERVAL_MS = 30000;
-
   async function probeCards() {
     const cards     = Array.from(document.querySelectorAll('a.card[data-probe-url]'));
     const probeList = cards.filter(c => c.dataset.probeUrl);
@@ -858,7 +860,6 @@
   }
 
   // ── form (master only) ────────────────────────────────────────────────────
-  let _mapaNodes = [];
 
   function initForm(nodes) {
     _mapaNodes = nodes;
@@ -983,7 +984,6 @@
     document.getElementById('f-endereco-group').style.display = e.target.checked ? 'flex' : 'none';
   });
 
-  window._formInited = false;
 </script>
 
 </body>
