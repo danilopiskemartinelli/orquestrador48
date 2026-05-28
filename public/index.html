@@ -592,6 +592,10 @@
           <label>Responsável *</label>
           <input id="f-responsavel" type="text" placeholder="Ex: TI Team" />
         </div>
+        <div class="form-group" style="flex:0 0 120px;">
+          <label>Porta</label>
+          <input id="f-porta" type="number" placeholder="3000" min="1" max="65535" />
+        </div>
         <div class="form-group">
           <label>Tags</label>
           <input id="f-tags" type="text" placeholder="Next.js, FastAPI, ..." />
@@ -716,6 +720,8 @@
         else main.push(item);
       }
     }
+    main.sort((a, b) => a.nome.localeCompare(b.nome, 'pt'));
+    monitor.sort((a, b) => a.nome.localeCompare(b.nome, 'pt'));
 
     let html = '';
     if (main.length)    html += `<div class="section-title">Sistemas</div><div class="grid-full">${main.map(s => makeCard(s, s._ip)).join('')}</div>`;
@@ -880,7 +886,7 @@
   }
 
   function resetForm() {
-    ['f-nome','f-pasta','f-responsavel','f-tags','f-descricao','f-endereco'].forEach(id => {
+    ['f-nome','f-pasta','f-responsavel','f-porta','f-tags','f-descricao','f-endereco'].forEach(id => {
       document.getElementById(id).value = '';
     });
     document.getElementById('f-dns').checked = false;
@@ -918,10 +924,14 @@
     const dns_exposto = document.getElementById('f-dns').checked;
     const endereco    = dns_exposto ? (get('f-endereco') || null) : null;
 
+    const portaPrincipal = parseInt(get('f-porta')) || null;
     const subdockers = Array.from(document.querySelectorAll('.subdocker-row')).map(row => ({
       nome:  row.querySelector('.sub-nome').value.trim(),
       porta: parseInt(row.querySelector('.sub-porta').value) || null,
     })).filter(s => s.nome);
+    if (portaPrincipal && !subdockers.some(s => s.nome === 'Frontend')) {
+      subdockers.unshift({ nome: 'Frontend', porta: portaPrincipal });
+    }
 
     return {
       hostname, nome, pasta, responsavel,

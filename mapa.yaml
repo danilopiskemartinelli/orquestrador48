@@ -213,7 +213,9 @@ MTLADVL051:
       categoria: Full-stack
       tags:
       - Next.Js
-      subdockers: {}
+      subdockers:
+        Frontend:
+          porta: 8090
 MTLADVL063:
   ip: 192.168.0.170
   memoria: 8GB
