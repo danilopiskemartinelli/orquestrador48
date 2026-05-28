@@ -86,6 +86,7 @@ _GIT_ENV = {**os.environ,
 def git_pull():
     if not REPO_PATH:
         return
+    subprocess.run(['git', '-C', REPO_PATH, 'checkout', '--', 'mapa.yaml'], capture_output=True)
     subprocess.run(['git', '-C', REPO_PATH, 'pull', '--rebase', _git_auth_url(), 'main'],
                    env=_GIT_ENV, check=True, capture_output=True)
 
