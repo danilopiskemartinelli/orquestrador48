@@ -845,17 +845,12 @@
       data = await r.json();
     } catch (_) { return; }
     cards.forEach(c => {
-      const u  = c.dataset.probeUrl;
+      const u   = c.dataset.probeUrl;
       const dot = c.querySelector('.status-dot');
-      const ok  = u && data[u] === true;
-      if (dot) dot.classList.toggle('online', ok);
-      c.style.display = (u && !ok) ? 'none' : '';
-    });
-    document.querySelectorAll('.grid, .grid-full').forEach(grid => {
-      const anyVisible = Array.from(grid.querySelectorAll('a.card')).some(c => c.style.display !== 'none');
-      grid.style.display = anyVisible ? '' : 'none';
-      const title = grid.previousElementSibling;
-      if (title && title.classList.contains('section-title')) title.style.display = anyVisible ? '' : 'none';
+      if (!dot) return;
+      if (!u)                    { dot.className = 'status-dot'; return; }
+      if (data[u] === true)      dot.className = 'status-dot online';
+      else                       dot.className = 'status-dot offline';
     });
   }
 
