@@ -59,9 +59,7 @@
       letter-spacing: -0.3px;
     }
 
-    .logo span {
-      color: var(--primary);
-    }
+    .logo span { color: var(--primary); }
 
     .badge {
       font-size: 0.65rem;
@@ -72,6 +70,11 @@
       color: var(--primary);
       letter-spacing: 0.5px;
       text-transform: uppercase;
+    }
+
+    .badge.master {
+      background: #fff4e6;
+      color: #b45309;
     }
 
     .header-subtitle {
@@ -92,7 +95,50 @@
       padding-left: 2px;
     }
 
+    .server-block {
+      max-width: 1200px;
+      margin: 0 auto 2rem;
+    }
+
+    .server-header {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .server-name {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--charcoal);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .server-ip {
+      font-size: 0.72rem;
+      font-family: ui-monospace, monospace;
+      color: var(--text-tertiary);
+    }
+
+    .server-label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 12px;
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
     .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .grid-full {
       max-width: 1200px;
       margin: 0 auto 2rem;
       display: grid;
@@ -212,10 +258,20 @@
       font-size: 0.72rem;
       color: var(--text-tertiary);
     }
-    .card-meta-sep { color: var(--border-dark); }
+    .card-meta-sep  { color: var(--border-dark); }
     .card-meta-link { color: var(--primary); }
 
-    /* Stats grid */
+    /* Stats */
+    .stats-node-title {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-tertiary);
+      font-weight: 600;
+      padding-left: 2px;
+      margin-bottom: 0.5rem;
+    }
+
     .stats-row {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -275,7 +331,7 @@
 
 <header>
   <div class="logo">Martinelli <span>Orchestrator</span> · <span id="host-info">…</span></div>
-  <div class="badge">v2</div>
+  <div class="badge" id="mode-badge">v2</div>
   <div class="header-subtitle">:3310 &nbsp;|&nbsp; <span id="ts"></span></div>
 </header>
 
@@ -283,8 +339,7 @@
   <div style="color:var(--text-tertiary);font-size:0.78rem;max-width:1200px;margin:0 auto;">Carregando sistemas…</div>
 </div>
 
-<!-- RECURSOS DOCKER -->
-<div class="section-title">Recursos Docker</div>
+<div class="section-title" id="stats-label">Recursos Docker</div>
 <div id="stats-grid" style="max-width:1200px;margin:0 auto 2rem;">
   <div style="color:var(--text-tertiary);font-size:0.78rem;">Carregando…</div>
 </div>
@@ -294,8 +349,7 @@
 </footer>
 
 <script>
-  const host = window.location.hostname;
-  document.getElementById('host-info').textContent = host;
+  document.getElementById('host-info').textContent = window.location.hostname;
 
   const el = document.getElementById('ts');
   const fmt = () => {
@@ -305,7 +359,7 @@
   fmt();
   setInterval(fmt, 1000);
 
-  // ── Tag style map ──────────────────────────────────────────────────────
+  // ── Tag style map ──────────────────────────────────────────────────────────
   const TAG_CLASS = {
     'Next.js': 'full', 'React': 'full',
     'FastAPI': 'backend', 'Node.js': 'backend', 'PostgreSQL': 'backend',
@@ -329,9 +383,7 @@
   }
 
   function cardUrl(sistema, ip) {
-    if (sistema.dns_exposto && sistema.endereco) {
-      return `https://${sistema.endereco}`;
-    }
+    if (sistema.dns_exposto && sistema.endereco) return `https://${sistema.endereco}`;
     const porta = mainPort(sistema.subdockers);
     if (!porta) return null;
     const scheme = [443, 9443, 18443, 8443].includes(porta) ? 'https' : 'http';
@@ -339,9 +391,9 @@
   }
 
   function makeCard(s, ip) {
-    const url = cardUrl(s, ip);
-    const porta = mainPort(s.subdockers);
-    const portaLabel = porta ? `:${porta}` : '';
+    const url          = cardUrl(s, ip);
+    const porta        = mainPort(s.subdockers);
+    const portaLabel   = porta ? `:${porta}` : '';
     const enderecoLabel = s.dns_exposto && s.endereco ? s.endereco : '';
     const tags = (s.tags || []).map(t => {
       const cls = TAG_CLASS[t] || '';
@@ -364,10 +416,11 @@
       </a>`;
   }
 
-  function renderMapa(data) {
-    const { ip, sistemas } = data;
-    const main = [];
-    const monitor = [];
+  // ── render single node ────────────────────────────────────────────────────
+
+  function renderNodeSystems(nodeData, container, showServerHeader) {
+    const { ip, servidor, sistemas } = nodeData;
+    const main = [], monitor = [];
 
     for (const [nome, s] of Object.entries(sistemas)) {
       const item = { nome, ...s };
@@ -377,19 +430,44 @@
 
     let html = '';
 
+    if (showServerHeader) {
+      html += `<div class="server-block">
+        <div class="server-header">
+          <span class="server-name">${servidor}</span>
+          <span class="server-ip">${ip}</span>
+          <span class="server-label">${nodeData.hostname}</span>
+        </div>`;
+    }
+
     if (main.length) {
-      html += `<div class="section-title">Sistemas</div><div class="grid">`;
-      html += main.map(s => makeCard(s, ip)).join('');
-      html += `</div>`;
+      html += showServerHeader
+        ? `<div class="section-title">Sistemas</div><div class="grid">${main.map(s => makeCard(s, ip)).join('')}</div>`
+        : `<div class="section-title">Sistemas</div><div class="grid-full">${main.map(s => makeCard(s, ip)).join('')}</div>`;
     }
-
     if (monitor.length) {
-      html += `<div class="section-title">Monitor</div><div class="grid">`;
-      html += monitor.map(s => makeCard(s, ip)).join('');
-      html += `</div>`;
+      html += showServerHeader
+        ? `<div class="section-title" style="margin-top:1rem;">Monitor</div><div class="grid">${monitor.map(s => makeCard(s, ip)).join('')}</div>`
+        : `<div class="section-title" style="margin-top:1rem;">Monitor</div><div class="grid-full">${monitor.map(s => makeCard(s, ip)).join('')}</div>`;
     }
 
-    document.getElementById('cards-container').innerHTML = html;
+    if (showServerHeader) html += '</div>';
+
+    container.insertAdjacentHTML('beforeend', html);
+  }
+
+  function renderMapa(data) {
+    const container = document.getElementById('cards-container');
+    container.innerHTML = '';
+
+    if (Array.isArray(data)) {
+      // master mode
+      document.getElementById('mode-badge').textContent = 'master';
+      document.getElementById('mode-badge').classList.add('master');
+      for (const node of data) renderNodeSystems(node, container, true);
+    } else {
+      renderNodeSystems(data, container, false);
+    }
+
     probeCards();
     setInterval(probeCards, PROBE_INTERVAL_MS);
   }
@@ -407,7 +485,8 @@
   loadMapa();
   setInterval(loadMapa, 60000);
 
-  // ── Docker resource stats ──────────────────────────────────────────────
+  // ── stats ─────────────────────────────────────────────────────────────────
+
   function fmtBytes(b) {
     if (b >= 1073741824) return (b / 1073741824).toFixed(1) + ' GB';
     if (b >= 1048576)    return (b / 1048576).toFixed(0) + ' MB';
@@ -420,25 +499,11 @@
     return '#3d7a30';
   }
 
-  function renderStats(data) {
-    const { containers, system } = data;
-    const grid = document.getElementById('stats-grid');
-    if (!containers.length) {
-      grid.innerHTML = '<div style="color:var(--text-tertiary);font-size:0.78rem;">Nenhum container rodando.</div>';
-      return;
-    }
-
+  function renderContainerList(containers, system) {
+    if (!containers.length) return '<div style="color:var(--text-tertiary);font-size:0.78rem;">Nenhum container rodando.</div>';
     const maxCpu = Math.max(...containers.map(c => c.cpu_pct), 0.001);
     const maxMem = Math.max(...containers.map(c => c.mem_bytes), 1);
-
-    const header = `
-      <div style="display:grid;grid-template-columns:200px 1fr 1fr;gap:1rem;
-        font-size:0.63rem;text-transform:uppercase;letter-spacing:.8px;
-        color:var(--text-tertiary);padding:0 1.25rem 0.5rem;font-weight:600;">
-        <span>Container</span><span>CPU</span><span>RAM</span>
-      </div>`;
-
-    const rows = containers.map(c => {
+    return containers.map(c => {
       const cpuBarPct = (c.cpu_pct / maxCpu) * 100;
       const memBarPct = (c.mem_bytes / maxMem) * 100;
       const cpuAbsPct = Math.min((c.cpu_pct / (system.cpu_cores * 100)) * 100, 100);
@@ -448,20 +513,47 @@
           <div class="stats-name" title="${c.name}">${c.name}</div>
           <div>
             <div class="bar-label"><span>CPU</span><strong>${c.cpu_pct.toFixed(1)}%</strong></div>
-            <div class="bar-track">
-              <div class="bar-fill" style="width:${cpuBarPct.toFixed(2)}%;background:${barColor(cpuAbsPct)};"></div>
-            </div>
+            <div class="bar-track"><div class="bar-fill" style="width:${cpuBarPct.toFixed(2)}%;background:${barColor(cpuAbsPct)};"></div></div>
           </div>
           <div>
             <div class="bar-label"><span>RAM</span><strong>${fmtBytes(c.mem_bytes)}</strong></div>
-            <div class="bar-track">
-              <div class="bar-fill" style="width:${memBarPct.toFixed(2)}%;background:${barColor(memAbsPct)};"></div>
-            </div>
+            <div class="bar-track"><div class="bar-fill" style="width:${memBarPct.toFixed(2)}%;background:${barColor(memAbsPct)};"></div></div>
           </div>
         </div>`;
     }).join('');
+  }
 
-    grid.innerHTML = `<div style="display:flex;flex-direction:column;gap:0.4rem;">${header}${rows}</div>`;
+  function renderStats(data) {
+    const grid = document.getElementById('stats-grid');
+
+    if (data.nodes) {
+      // master mode
+      let html = '';
+      for (const [hostname, nodeStats] of Object.entries(data.nodes)) {
+        const { containers, system } = nodeStats;
+        html += `<div style="margin-bottom:1.5rem;">
+          <div class="stats-node-title">${hostname}</div>
+          <div style="display:flex;flex-direction:column;gap:0.4rem;">
+            <div style="display:grid;grid-template-columns:200px 1fr 1fr;gap:1rem;
+              font-size:0.63rem;text-transform:uppercase;letter-spacing:.8px;
+              color:var(--text-tertiary);padding:0 1.25rem 0.5rem;font-weight:600;">
+              <span>Container</span><span>CPU</span><span>RAM</span>
+            </div>
+            ${renderContainerList(containers, system)}
+          </div>
+        </div>`;
+      }
+      grid.innerHTML = html || '<div style="color:var(--text-tertiary);font-size:0.78rem;">Nenhum nó respondeu.</div>';
+    } else {
+      const { containers, system } = data;
+      const header = `
+        <div style="display:grid;grid-template-columns:200px 1fr 1fr;gap:1rem;
+          font-size:0.63rem;text-transform:uppercase;letter-spacing:.8px;
+          color:var(--text-tertiary);padding:0 1.25rem 0.5rem;font-weight:600;">
+          <span>Container</span><span>CPU</span><span>RAM</span>
+        </div>`;
+      grid.innerHTML = `<div style="display:flex;flex-direction:column;gap:0.4rem;">${header}${renderContainerList(containers, system)}</div>`;
+    }
   }
 
   function loadStats() {
@@ -476,28 +568,28 @@
   loadStats();
   setInterval(loadStats, 5000);
 
-  // ── Probe dinâmico de disponibilidade dos cards ──
+  // ── probe ─────────────────────────────────────────────────────────────────
   const PROBE_INTERVAL_MS = 30000;
 
   async function probeCards() {
-    const cards = Array.from(document.querySelectorAll('a.card[data-probe-url]'));
+    const cards     = Array.from(document.querySelectorAll('a.card[data-probe-url]'));
     const probeList = cards.filter(c => c.dataset.probeUrl);
     if (!probeList.length) return;
     const urls = probeList.map(c => c.dataset.probeUrl);
-    const qs = urls.map(u => 'url=' + encodeURIComponent(u)).join('&');
+    const qs   = urls.map(u => 'url=' + encodeURIComponent(u)).join('&');
     let data = {};
     try {
       const r = await fetch('/api/probe?' + qs, { cache: 'no-store' });
       data = await r.json();
     } catch (_) { return; }
     cards.forEach(c => {
-      const u = c.dataset.probeUrl;
+      const u  = c.dataset.probeUrl;
       const dot = c.querySelector('.status-dot');
-      const ok = u && data[u] === true;
+      const ok  = u && data[u] === true;
       if (dot) dot.classList.toggle('online', ok);
       c.style.display = (u && !ok) ? 'none' : '';
     });
-    document.querySelectorAll('.grid').forEach(grid => {
+    document.querySelectorAll('.grid, .grid-full').forEach(grid => {
       const anyVisible = Array.from(grid.querySelectorAll('a.card')).some(c => c.style.display !== 'none');
       grid.style.display = anyVisible ? '' : 'none';
       const title = grid.previousElementSibling;

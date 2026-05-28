@@ -1,20 +1,37 @@
+import asyncio
 import http.client
 import json
 import os
 import socket
 import ssl
 import threading
+from urllib.parse import urlparse
+
+import httpx
 import yaml
-from http.server import BaseHTTPRequestHandler, HTTPServer
-from urllib.parse import urlparse, parse_qs
+from fastapi import FastAPI, Query
+from fastapi.middleware.cors import CORSMiddleware
 
-MAPA_PATH = '/app/mapa.yaml'
-SERVER_ID  = os.environ.get('SERVER_ID', socket.gethostname())
+MAPA_PATH       = '/app/mapa.yaml'
+SERVER_ID       = os.environ.get('SERVER_ID', socket.gethostname())
+NODE_PORT       = int(os.environ.get('NODE_PORT', '8900'))
+
+_MASTER_NODES   = {'MTLADVL048'}
+_master_env     = os.environ.get('MASTER', '')
+MASTER          = (_master_env.lower() in ('1', 'true', 'yes')) if _master_env else (SERVER_ID in _MASTER_NODES)
+
+app = FastAPI()
+app.add_middleware(CORSMiddleware, allow_origins=['*'], allow_methods=['*'], allow_headers=['*'])
 
 
-def get_mapa():
+# ── mapa ──────────────────────────────────────────────────────────────────────
+
+def load_mapa():
     with open(MAPA_PATH) as f:
-        mapa = yaml.safe_load(f)
+        return yaml.safe_load(f)
+
+def mapa_local():
+    mapa = load_mapa()
     node = mapa.get(SERVER_ID, {})
     return {
         'hostname': SERVER_ID,
@@ -23,8 +40,10 @@ def get_mapa():
         'sistemas': node.get('sistemas', {}),
     }
 
-DOCKER_SOCK = '/var/run/docker.sock'
 
+# ── docker stats ──────────────────────────────────────────────────────────────
+
+DOCKER_SOCK = '/var/run/docker.sock'
 
 def docker_get(path):
     conn = http.client.HTTPConnection('localhost')
@@ -34,42 +53,33 @@ def docker_get(path):
     r = conn.getresponse()
     return json.loads(r.read())
 
-
 def container_stats(c):
-    cid = c['Id']
+    cid  = c['Id']
     name = c['Names'][0].lstrip('/')
     try:
-        s = docker_get(f'/containers/{cid}/stats?stream=false')
-        cpu_stats = s.get('cpu_stats', {})
-        precpu = s.get('precpu_stats', {})
-        cpu_delta = (cpu_stats.get('cpu_usage', {}).get('total_usage', 0)
-                     - precpu.get('cpu_usage', {}).get('total_usage', 0))
-        sys_delta = (cpu_stats.get('system_cpu_usage', 0)
-                     - precpu.get('system_cpu_usage', 0))
-        num_cpus = cpu_stats.get('online_cpus') or len(
-            cpu_stats.get('cpu_usage', {}).get('percpu_usage', [1]))
-        cpu_pct = (cpu_delta / sys_delta) * num_cpus * 100 if sys_delta > 0 else 0
+        s        = docker_get(f'/containers/{cid}/stats?stream=false')
+        cpu_s    = s.get('cpu_stats', {})
+        precpu   = s.get('precpu_stats', {})
+        cpu_d    = cpu_s.get('cpu_usage', {}).get('total_usage', 0) - precpu.get('cpu_usage', {}).get('total_usage', 0)
+        sys_d    = cpu_s.get('system_cpu_usage', 0) - precpu.get('system_cpu_usage', 0)
+        num_cpus = cpu_s.get('online_cpus') or len(cpu_s.get('cpu_usage', {}).get('percpu_usage', [1]))
+        cpu_pct  = (cpu_d / sys_d) * num_cpus * 100 if sys_d > 0 else 0
 
-        mem = s.get('memory_stats', {})
-        usage = mem.get('usage', 0)
-        cache = mem.get('stats', {}).get('cache',
-                mem.get('stats', {}).get('inactive_file', 0))
-        mem_usage = max(0, usage - cache)
-        mem_limit = mem.get('limit', 1)
+        mem      = s.get('memory_stats', {})
+        usage    = mem.get('usage', 0)
+        cache    = mem.get('stats', {}).get('cache', mem.get('stats', {}).get('inactive_file', 0))
         return {
-            'name': name,
-            'cpu_pct': round(cpu_pct, 2),
-            'mem_bytes': mem_usage,
-            'mem_limit': mem_limit,
+            'name':      name,
+            'cpu_pct':   round(cpu_pct, 2),
+            'mem_bytes': max(0, usage - cache),
+            'mem_limit': mem.get('limit', 1),
         }
     except Exception as e:
         return {'name': name, 'cpu_pct': 0, 'mem_bytes': 0, 'mem_limit': 0, 'error': str(e)}
 
-
-def get_stats():
+def stats_local():
     containers = docker_get('/containers/json?filters=%7B%22status%22%3A%5B%22running%22%5D%7D')
-    results = []
-    lock = threading.Lock()
+    results, lock = [], threading.Lock()
 
     def fetch(c):
         r = container_stats(c)
@@ -77,49 +87,41 @@ def get_stats():
             results.append(r)
 
     threads = [threading.Thread(target=fetch, args=(c,)) for c in containers]
-    for t in threads:
-        t.start()
-    for t in threads:
-        t.join(timeout=6)
+    for t in threads: t.start()
+    for t in threads: t.join(timeout=6)
 
     with open('/proc/meminfo') as f:
         mem_total = int([l for l in f if l.startswith('MemTotal')][0].split()[1]) * 1024
 
     return {
         'containers': sorted(results, key=lambda x: x['mem_bytes'], reverse=True),
-        'system': {
-            'mem_total': mem_total,
-            'cpu_cores': os.cpu_count() or 1,
-        },
+        'system':     {'mem_total': mem_total, 'cpu_cores': os.cpu_count() or 1},
     }
 
 
+# ── probe ─────────────────────────────────────────────────────────────────────
+
 def probe_url(url, timeout=2.0):
-    """Server-side probe: TCP connect + minimal HTTP HEAD. Ignora cert TLS."""
     try:
-        u = urlparse(url)
+        u    = urlparse(url)
         host = u.hostname
         port = u.port or (443 if u.scheme == 'https' else 80)
         if not host:
             return False
         with socket.create_connection((host, port), timeout=timeout) as raw:
             if u.scheme == 'https':
-                ctx = ssl._create_unverified_context()
+                ctx  = ssl._create_unverified_context()
                 sock = ctx.wrap_socket(raw, server_hostname=host)
             else:
                 sock = raw
             path = u.path or '/'
-            req = f"HEAD {path} HTTP/1.0\r\nHost: {host}\r\nConnection: close\r\n\r\n"
-            sock.sendall(req.encode())
-            data = sock.recv(64)
-            return data.startswith(b'HTTP/')
+            sock.sendall(f"HEAD {path} HTTP/1.0\r\nHost: {host}\r\nConnection: close\r\n\r\n".encode())
+            return sock.recv(64).startswith(b'HTTP/')
     except Exception:
         return False
 
-
-def get_probe(urls):
-    results = {}
-    lock = threading.Lock()
+def probe_local(urls):
+    results, lock = {}, threading.Lock()
 
     def fetch(u):
         ok = probe_url(u)
@@ -127,46 +129,56 @@ def get_probe(urls):
             results[u] = ok
 
     threads = [threading.Thread(target=fetch, args=(u,)) for u in urls]
-    for t in threads:
-        t.start()
-    for t in threads:
-        t.join(timeout=3)
+    for t in threads: t.start()
+    for t in threads: t.join(timeout=3)
     return results
 
 
-class Handler(BaseHTTPRequestHandler):
-    def _send_json(self, status, payload):
-        data = json.dumps(payload).encode()
-        self.send_response(status)
-        self.send_header('Content-Type', 'application/json')
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Content-Length', len(data))
-        self.end_headers()
-        self.wfile.write(data)
+# ── master aggregation ────────────────────────────────────────────────────────
 
-    def do_GET(self):
-        u = urlparse(self.path)
-        try:
-            if u.path == '/stats':
-                self._send_json(200, get_stats())
-                return
-            if u.path == '/probe':
-                qs = parse_qs(u.query)
-                urls = qs.get('url', [])
-                self._send_json(200, get_probe(urls))
-                return
-            if u.path == '/mapa':
-                self._send_json(200, get_mapa())
-                return
-            self.send_response(404)
-            self.end_headers()
-        except Exception as e:
-            self.send_response(500)
-            self.end_headers()
-            self.wfile.write(str(e).encode())
+async def _fetch(client: httpx.AsyncClient, hostname: str, ip: str, endpoint: str):
+    try:
+        r = await client.get(f'http://{ip}:{NODE_PORT}/{endpoint}', timeout=5.0)
+        return hostname, r.json()
+    except Exception:
+        return hostname, None
 
-    def log_message(self, *args):
-        pass
+async def mapa_master():
+    mapa  = load_mapa()
+    nodes = [(h, v.get('ip', '')) for h, v in mapa.items()]
+    async with httpx.AsyncClient() as client:
+        results = await asyncio.gather(*[_fetch(client, h, ip, 'mapa') for h, ip in nodes if ip])
+    return [data for _, data in results if data]
+
+async def stats_master():
+    mapa  = load_mapa()
+    nodes = [(h, v.get('ip', '')) for h, v in mapa.items()]
+    async with httpx.AsyncClient() as client:
+        results = await asyncio.gather(*[_fetch(client, h, ip, 'stats') for h, ip in nodes if ip])
+    return {'nodes': {h: data for h, data in results if data}}
 
 
-HTTPServer(('0.0.0.0', 8000), Handler).serve_forever()
+# ── routes ────────────────────────────────────────────────────────────────────
+
+@app.get('/mapa')
+async def route_mapa():
+    if MASTER:
+        return await mapa_master()
+    return mapa_local()
+
+@app.get('/stats')
+async def route_stats():
+    if MASTER:
+        return await stats_master()
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(None, stats_local)
+
+@app.get('/probe')
+async def route_probe(url: list[str] = Query(default=[])):
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(None, probe_local, url)
+
+
+if __name__ == '__main__':
+    import uvicorn
+    uvicorn.run(app, host='0.0.0.0', port=8000)

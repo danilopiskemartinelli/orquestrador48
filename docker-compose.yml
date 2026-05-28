@@ -14,8 +14,11 @@ services:
     image: martinelli/orchestrator-stats:latest
     container_name: orchestrator-stats
     restart: unless-stopped
+    ports:
+      - "8900:8000"
     environment:
       SERVER_ID: ${HOSTNAME:-MTLADVL063}
+      # NODE_PORT: "8900"    # porta exposta dos outros nós (padrão 8900)
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./mapa.yaml:/app/mapa.yaml:ro

@@ -1,1 +1,4 @@
 pyyaml
+fastapi
+uvicorn[standard]
+httpx
