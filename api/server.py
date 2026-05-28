@@ -200,7 +200,7 @@ def probe_local(urls):
 
 async def _fetch(client: httpx.AsyncClient, hostname: str, ip: str, endpoint: str):
     try:
-        r = await client.get(f'http://{ip}:{NODE_PORT}/{endpoint}', timeout=5.0)
+        r = await client.get(f'http://{ip}:{NODE_PORT}/{endpoint}', timeout=2.0)
         return hostname, r.json()
     except Exception:
         return hostname, None
@@ -215,10 +215,13 @@ def mapa_master():
 async def stats_master():
     mapa   = load_mapa()
     remote = [(h, v.get('ip', '')) for h, v in mapa.items() if h != SERVER_ID and v.get('ip')]
+    loop   = asyncio.get_event_loop()
     async with httpx.AsyncClient() as client:
-        remote_results = await asyncio.gather(*[_fetch(client, h, ip, 'stats') for h, ip in remote])
-    loop = asyncio.get_event_loop()
-    local_stats = await loop.run_in_executor(None, stats_local)
+        remote_task = asyncio.gather(*[_fetch(client, h, ip, 'stats') for h, ip in remote])
+        local_stats, remote_results = await asyncio.gather(
+            loop.run_in_executor(None, stats_local),
+            remote_task,
+        )
     nodes = {SERVER_ID: local_stats}
     nodes.update({h: data for h, data in remote_results if data})
     return {'nodes': nodes}
