@@ -180,18 +180,24 @@ async def _fetch(client: httpx.AsyncClient, hostname: str, ip: str, endpoint: st
         return hostname, None
 
 async def mapa_master():
-    mapa  = load_mapa()
-    nodes = [(h, v.get('ip', '')) for h, v in mapa.items()]
+    mapa   = load_mapa()
+    local  = [(h, None) for h, v in mapa.items() if h == SERVER_ID]
+    remote = [(h, v.get('ip', '')) for h, v in mapa.items() if h != SERVER_ID and v.get('ip')]
     async with httpx.AsyncClient() as client:
-        results = await asyncio.gather(*[_fetch(client, h, ip, 'mapa') for h, ip in nodes if ip])
+        remote_results = await asyncio.gather(*[_fetch(client, h, ip, 'mapa') for h, ip in remote])
+    results = [(h, mapa_local()) for h, _ in local] + list(remote_results)
     return [data for _, data in results if data]
 
 async def stats_master():
-    mapa  = load_mapa()
-    nodes = [(h, v.get('ip', '')) for h, v in mapa.items()]
+    mapa   = load_mapa()
+    remote = [(h, v.get('ip', '')) for h, v in mapa.items() if h != SERVER_ID and v.get('ip')]
     async with httpx.AsyncClient() as client:
-        results = await asyncio.gather(*[_fetch(client, h, ip, 'stats') for h, ip in nodes if ip])
-    return {'nodes': {h: data for h, data in results if data}}
+        remote_results = await asyncio.gather(*[_fetch(client, h, ip, 'stats') for h, ip in remote])
+    loop = asyncio.get_event_loop()
+    local_stats = await loop.run_in_executor(None, stats_local)
+    nodes = {SERVER_ID: local_stats}
+    nodes.update({h: data for h, data in remote_results if data})
+    return {'nodes': nodes}
 
 
 # ── POST /sistema ─────────────────────────────────────────────────────────────
