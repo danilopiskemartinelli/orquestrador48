@@ -747,7 +747,6 @@
     }
 
     probeCards();
-    setInterval(probeCards, PROBE_INTERVAL_MS);
   }
 
   function loadMapa() {
@@ -762,6 +761,7 @@
 
   loadMapa();
   setInterval(loadMapa, 60000);
+  setInterval(probeCards, PROBE_INTERVAL_MS);
 
   // ── stats ─────────────────────────────────────────────────────────────────
 
