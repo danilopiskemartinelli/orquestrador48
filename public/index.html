@@ -635,7 +635,8 @@
   let   _mapaNodes        = [];
   window._formInited      = false;
 
-  document.getElementById('host-info').textContent = window.location.hostname;
+  const _hi = document.getElementById('host-info');
+  if (_hi) _hi.textContent = window.location.hostname;
 
   const el = document.getElementById('ts');
   const fmt = () => {
