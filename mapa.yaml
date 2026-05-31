@@ -216,6 +216,19 @@ MTLADVL051:
       subdockers:
         Frontend:
           porta: 8090
+    Softdesk_Agent:
+      pasta: softdesk-agente-resposta
+      responsavel: TI Team
+      dns_exposto: false
+      endereco: null
+      descricao: Agente para Softdesk
+      categoria: Full-stack
+      tags:
+      - Streamlit
+      - FastApi
+      subdockers:
+        Frontend:
+          porta: 3316
 MTLADVL063:
   ip: 192.168.0.170
   memoria: 8GB
