@@ -3,6 +3,7 @@ import http.client
 import json
 import os
 import re
+import shutil
 import socket
 import ssl
 import subprocess
@@ -10,6 +11,7 @@ import threading
 from urllib.parse import urlparse
 
 import httpx
+import psutil
 import yaml
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -150,14 +152,26 @@ def stats_local():
 
     threads = [threading.Thread(target=fetch, args=(c,)) for c in containers]
     for t in threads: t.start()
-    for t in threads: t.join(timeout=6)
 
-    with open('/proc/meminfo') as f:
-        mem_total = int([l for l in f if l.startswith('MemTotal')][0].split()[1]) * 1024
+    # coleta métricas do sistema enquanto os threads rodam
+    cpu_pct   = psutil.cpu_percent(interval=0.5)   # real — sistema inteiro
+    vm        = psutil.virtual_memory()             # real — RAM sistema
+    disk      = shutil.disk_usage('/')              # real — disco
+
+    for t in threads: t.join(timeout=6)
 
     return {
         'containers': sorted(results, key=lambda x: x['mem_bytes'], reverse=True),
-        'system':     {'mem_total': mem_total, 'cpu_cores': os.cpu_count() or 1},
+        'system': {
+            'cpu_pct':    round(cpu_pct, 1),        # % CPU total do host
+            'cpu_cores':  psutil.cpu_count(logical=True),
+            'mem_total':  vm.total,                 # RAM física total
+            'mem_used':   vm.used,                  # RAM usada (host inteiro)
+            'mem_available': vm.available,
+            'disk_total': disk.total,
+            'disk_used':  disk.used,
+            'disk_free':  disk.free,
+        },
     }
 
 
@@ -284,6 +298,70 @@ async def route_stats():
         return await stats_master()
     loop = asyncio.get_event_loop()
     return await loop.run_in_executor(None, stats_local)
+
+@app.get('/nodes')
+async def route_nodes():
+    mapa = load_mapa()
+    loop = asyncio.get_event_loop()
+
+    async def fetch_node_stats(hostname, node):
+        ip       = node.get('ip', '')
+        servidor = node.get('servidor', hostname)
+        memoria  = node.get('memoria', '')
+        sistemas = node.get('sistemas', {})
+        sistemas_list = [
+            {'nome': nome, 'categoria': s.get('categoria', ''), 'tags': s.get('tags', [])}
+            for nome, s in sistemas.items()
+        ]
+
+        is_local = (hostname == SERVER_ID)
+        try:
+            if is_local:
+                data = await loop.run_in_executor(None, stats_local)
+            else:
+                async with httpx.AsyncClient() as client:
+                    r = await client.get(f'http://{ip}:{NODE_PORT}/stats', timeout=3.0)
+                    data = r.json()
+            containers = data.get('containers', [])
+            system     = data.get('system', {})
+            return {
+                'hostname':      hostname,
+                'servidor':      servidor,
+                'ip':            ip,
+                'memoria':       memoria,
+                'sistemas_list': sistemas_list,
+                'n_containers':  len(containers),
+                'cpu_pct':       system.get('cpu_pct', 0),
+                'cpu_cores':     system.get('cpu_cores', 0),
+                'mem_used':      system.get('mem_used', 0),
+                'mem_total':     system.get('mem_total', 0),
+                'disk_total':    system.get('disk_total', 0),
+                'disk_used':     system.get('disk_used', 0),
+                'disk_free':     system.get('disk_free', 0),
+                'online':        True,
+            }
+        except Exception:
+            return {
+                'hostname':      hostname,
+                'servidor':      servidor,
+                'ip':            ip,
+                'memoria':       memoria,
+                'sistemas_list': sistemas_list,
+                'n_containers':  0,
+                'mem_used':      0,
+                'mem_total':     0,
+                'cpu_pct':       0,
+                'cpu_cores':     0,
+                'disk_total':    0,
+                'disk_used':     0,
+                'disk_free':     0,
+                'online':        False,
+            }
+
+    results = await asyncio.gather(*[
+        fetch_node_stats(h, v) for h, v in mapa.items()
+    ])
+    return list(results)
 
 @app.get('/probe')
 async def route_probe(url: list[str] = Query(default=[])):

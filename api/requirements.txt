@@ -2,3 +2,4 @@ pyyaml
 fastapi
 uvicorn[standard]
 httpx
+psutil

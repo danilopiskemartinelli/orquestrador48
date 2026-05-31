@@ -524,6 +524,181 @@
     }
     .form-msg.error   { background: #fce8e8; color: var(--error);   display: block; }
     .form-msg.success { background: var(--success-light); color: var(--success); display: block; }
+
+    /* ── node distribution cards ── */
+    .node-cards {
+      max-width: 1200px;
+      margin: 0 auto 2rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .node-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.1rem 1.25rem 1.15rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .node-card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--primary);
+    }
+
+    .node-card.offline::before { background: var(--border-dark); }
+
+    .node-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .node-card-name {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--charcoal);
+    }
+
+    .node-card-hostname {
+      font-size: 0.63rem;
+      font-family: ui-monospace, monospace;
+      color: var(--text-tertiary);
+      margin-top: 1px;
+    }
+
+    .node-status-badge {
+      font-size: 0.6rem;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      flex-shrink: 0;
+    }
+    .node-status-badge.online  { background: var(--success-light); color: var(--success); }
+    .node-status-badge.offline { background: #fce8e8; color: var(--error); }
+
+    .node-counters {
+      display: flex;
+      gap: 1.25rem;
+    }
+
+    .node-counter {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .node-counter-value {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--charcoal);
+      line-height: 1.1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .node-counter-label {
+      font-size: 0.63rem;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 500;
+    }
+
+    .node-ram-block { display: flex; flex-direction: column; gap: 3px; }
+
+    .node-ram-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.65rem;
+      color: var(--text-tertiary);
+    }
+
+    .node-ram-label strong { color: var(--charcoal); font-weight: 600; }
+
+    .node-ip {
+      font-size: 0.68rem;
+      font-family: ui-monospace, monospace;
+      color: var(--text-tertiary);
+      border-top: 1px solid var(--border);
+      padding-top: 0.5rem;
+      margin-top: 0.1rem;
+    }
+
+    .node-resource-block { display: flex; flex-direction: column; gap: 3px; }
+
+    .node-resource-row {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .node-resource-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.65rem;
+      color: var(--text-tertiary);
+    }
+    .node-resource-label strong { color: var(--charcoal); font-weight: 600; }
+
+    .node-sistemas-list {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      border-top: 1px solid var(--border);
+      padding-top: 0.6rem;
+      margin-top: 0.1rem;
+    }
+
+    .node-sistema-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.4rem;
+      font-size: 0.72rem;
+      color: var(--text);
+      padding: 2px 0;
+    }
+
+    .node-sistema-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+    }
+
+    .node-sistema-cat {
+      font-size: 0.6rem;
+      font-weight: 500;
+      padding: 1px 6px;
+      border-radius: 10px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .node-sistema-cat.full     { background: #e8eff9; color: #1c62cb; }
+    .node-sistema-cat.backend  { background: #fff4e6; color: #b45309; }
+    .node-sistema-cat.stream   { background: #f3eeff; color: #7c3aed; }
+    .node-sistema-cat.ia       { background: #eef5ec; color: #3d7a30; }
+    .node-sistema-cat.infra    { background: #fce8e8; color: #c62828; }
+    .node-sistema-cat.default  { background: var(--off-white); color: var(--text-tertiary); border: 1px solid var(--border); }
+
+    .node-disk-free {
+      font-size: 0.65rem;
+      color: var(--success);
+      font-weight: 600;
+    }
+    .node-disk-warn { color: var(--warning); }
+    .node-disk-crit { color: var(--error); }
   </style>
 </head>
 <body>
@@ -536,6 +711,11 @@
 
 <div id="cards-container">
   <div style="color:var(--text-tertiary);font-size:0.78rem;max-width:1200px;margin:0 auto;">Carregando sistemas…</div>
+</div>
+
+<div class="section-title">Distribuição por Máquina</div>
+<div class="node-cards" id="node-cards">
+  <div style="color:var(--text-tertiary);font-size:0.78rem;">Carregando…</div>
 </div>
 
 <div class="section-title" id="stats-label">Recursos Docker</div>
@@ -745,6 +925,110 @@
   loadMapa();
   setInterval(loadMapa, 60000);
   setInterval(probeCards, PROBE_INTERVAL_MS);
+
+  // ── node distribution cards ───────────────────────────────────────────────
+
+  const CAT_CLASS = {
+    'Full-stack': 'full', 'Backend / API': 'backend',
+    'Ferramentas / IA': 'ia', 'Infraestrutura': 'infra', 'Streamlit': 'stream',
+  };
+
+  function renderNodes(nodes) {
+    const wrap = document.getElementById('node-cards');
+    if (!nodes || !nodes.length) { wrap.innerHTML = ''; return; }
+
+    wrap.innerHTML = nodes.map(n => {
+      const online     = n.online;
+      const memUsedGB  = n.mem_used  ? (n.mem_used  / 1073741824).toFixed(1) : null;
+      const memTotalGB = n.mem_total ? (n.mem_total / 1073741824).toFixed(1) : n.memoria?.replace('GB','') || null;
+      const memPct     = n.mem_total && n.mem_used ? Math.min((n.mem_used / n.mem_total) * 100, 100) : 0;
+      const cpuPct     = n.cpu_pct || 0;
+      const diskTotalGB = n.disk_total ? (n.disk_total / 1073741824).toFixed(0) : null;
+      const diskUsedGB  = n.disk_used  ? (n.disk_used  / 1073741824).toFixed(0) : null;
+      const diskPct     = n.disk_total && n.disk_used ? Math.min((n.disk_used / n.disk_total) * 100, 100) : 0;
+      const ramColor   = c => c >= 80 ? '#c62828' : c >= 50 ? '#e6960a' : '#3d7a30';
+
+      const sistemas = (n.sistemas_list || []).map(s => {
+        const cls = CAT_CLASS[s.categoria] || 'default';
+        const label = s.categoria === 'Backend / API' ? 'API'
+                    : s.categoria === 'Ferramentas / IA' ? 'IA'
+                    : s.categoria === 'Infraestrutura' ? 'Infra'
+                    : s.categoria === 'Full-stack' ? 'Full'
+                    : s.categoria || '';
+        return `<div class="node-sistema-item">
+          <span class="node-sistema-name" title="${s.nome}">${s.nome}</span>
+          ${label ? `<span class="node-sistema-cat ${cls}">${label}</span>` : ''}
+        </div>`;
+      }).join('');
+
+      return `
+        <div class="node-card${online ? '' : ' offline'}">
+          <div class="node-card-header">
+            <div>
+              <div class="node-card-name">${n.servidor}</div>
+              <div class="node-card-hostname">${n.hostname}</div>
+            </div>
+            <span class="node-status-badge ${online ? 'online' : 'offline'}">${online ? 'online' : 'offline'}</span>
+          </div>
+
+          <div class="node-counters">
+            <div class="node-counter">
+              <div class="node-counter-value">${n.n_containers}</div>
+              <div class="node-counter-label">containers</div>
+            </div>
+            <div class="node-counter">
+              <div class="node-counter-value">${(n.sistemas_list || []).length}</div>
+              <div class="node-counter-label">sistemas</div>
+            </div>
+          </div>
+
+          <div class="node-resource-block">
+            <div class="node-resource-row">
+              <div class="node-resource-label">
+                <span>CPU${n.cpu_cores ? ' · ' + n.cpu_cores + ' cores' : ''}</span>
+                <strong>${online ? cpuPct.toFixed(1) + '%' : '—'}</strong>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill" style="width:${online ? cpuPct.toFixed(1) : 0}%;background:${ramColor(cpuPct)};"></div>
+              </div>
+            </div>
+            <div class="node-resource-row" style="margin-top:4px;">
+              <div class="node-resource-label">
+                <span>RAM${memTotalGB ? ' · ' + memTotalGB + ' GB' : ''}</span>
+                <strong>${online && memUsedGB ? memUsedGB + ' / ' + memTotalGB + ' GB' : memTotalGB ? memTotalGB + ' GB' : '—'}</strong>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill" style="width:${memPct.toFixed(1)}%;background:${ramColor(memPct)};"></div>
+              </div>
+            </div>
+            <div class="node-resource-row" style="margin-top:4px;">
+              <div class="node-resource-label">
+                <span>Disco${diskTotalGB ? ' · ' + diskTotalGB + ' GB' : ''}</span>
+                <strong>${online && diskUsedGB ? diskUsedGB + ' / ' + diskTotalGB + ' GB' : diskTotalGB ? diskTotalGB + ' GB' : '—'}</strong>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill" style="width:${diskPct.toFixed(1)}%;background:${ramColor(diskPct)};"></div>
+              </div>
+            </div>
+          </div>
+
+          ${sistemas ? `<div class="node-sistemas-list">${sistemas}</div>` : ''}
+
+          <div class="node-ip">${n.ip}</div>
+        </div>`;
+    }).join('');
+  }
+
+  function loadNodes() {
+    fetch('/api/nodes')
+      .then(r => r.json())
+      .then(renderNodes)
+      .catch(() => {
+        document.getElementById('node-cards').innerHTML = '';
+      });
+  }
+  loadNodes();
+  setInterval(loadNodes, 15000);
 
   // ── stats ─────────────────────────────────────────────────────────────────
 
