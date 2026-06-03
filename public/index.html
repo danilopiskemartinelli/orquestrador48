@@ -946,6 +946,9 @@
       const diskTotalGB = n.disk_total ? (n.disk_total / 1073741824).toFixed(0) : null;
       const diskUsedGB  = n.disk_used  ? (n.disk_used  / 1073741824).toFixed(0) : null;
       const diskPct     = n.disk_total && n.disk_used ? Math.min((n.disk_used / n.disk_total) * 100, 100) : 0;
+      const swapTotalGB = n.swap_total ? (n.swap_total / 1073741824).toFixed(1) : null;
+      const swapUsedGB  = n.swap_used  ? (n.swap_used  / 1073741824).toFixed(1) : null;
+      const swapPct     = n.swap_total && n.swap_total > 0 ? Math.min((n.swap_used / n.swap_total) * 100, 100) : 0;
       const ramColor   = c => c >= 80 ? '#c62828' : c >= 50 ? '#e6960a' : '#3d7a30';
 
       const sistemas = (n.sistemas_list || []).map(s => {
@@ -1010,6 +1013,15 @@
                 <div class="bar-fill" style="width:${diskPct.toFixed(1)}%;background:${ramColor(diskPct)};"></div>
               </div>
             </div>
+            ${swapTotalGB ? `<div class="node-resource-row" style="margin-top:4px;">
+              <div class="node-resource-label">
+                <span>Swap · ${swapTotalGB} GB</span>
+                <strong>${online && n.swap_used > 0 ? swapUsedGB + ' / ' + swapTotalGB + ' GB' : online ? '0 / ' + swapTotalGB + ' GB' : '—'}</strong>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill" style="width:${swapPct.toFixed(1)}%;background:${ramColor(swapPct)};"></div>
+              </div>
+            </div>` : ''}
           </div>
 
           ${sistemas ? `<div class="node-sistemas-list">${sistemas}</div>` : ''}

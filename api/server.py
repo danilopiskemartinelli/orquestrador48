@@ -157,6 +157,7 @@ def stats_local():
     cpu_pct   = psutil.cpu_percent(interval=0.5)   # real — sistema inteiro
     vm        = psutil.virtual_memory()             # real — RAM sistema
     disk      = shutil.disk_usage('/')              # real — disco
+    swap      = psutil.swap_memory()               # real — swap
 
     for t in threads: t.join(timeout=6)
 
@@ -171,6 +172,8 @@ def stats_local():
             'disk_total': disk.total,
             'disk_used':  disk.used,
             'disk_free':  disk.free,
+            'swap_total': swap.total,
+            'swap_used':  swap.used,
         },
     }
 
@@ -338,6 +341,8 @@ async def route_nodes():
                 'disk_total':    system.get('disk_total', 0),
                 'disk_used':     system.get('disk_used', 0),
                 'disk_free':     system.get('disk_free', 0),
+                'swap_total':    system.get('swap_total', 0),
+                'swap_used':     system.get('swap_used', 0),
                 'online':        True,
             }
         except Exception:
@@ -355,6 +360,8 @@ async def route_nodes():
                 'disk_total':    0,
                 'disk_used':     0,
                 'disk_free':     0,
+                'swap_total':    0,
+                'swap_used':     0,
                 'online':        False,
             }
 
