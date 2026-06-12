@@ -229,6 +229,12 @@ MTLADVL051:
       subdockers:
         Frontend:
           porta: 3316
+MTLADVL088:
+  ip: 192.168.0.188
+  memoria: 8GB
+  servidor: Orquestrador Linux
+  sistemas: {}
+
 MTLADVL063:
   ip: 192.168.0.170
   memoria: 8GB
