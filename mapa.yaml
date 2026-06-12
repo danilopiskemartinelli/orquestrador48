@@ -372,3 +372,24 @@ MTLADVL063:
           porta: 3324
         Backend:
           porta: 8324
+MTLADVL088:
+  ip: 192.168.0.188
+  memoria: 8GB
+  servidor: Agentes IA
+  sistemas:
+    Orquestrador:
+      pasta: orchestrator
+      responsavel: TI Team
+      dns_exposto: false
+      endereco: null
+      descricao: Orquestrador de serviços Martinelli — dashboard de monitoramento e
+        gestão de sistemas Docker em todos os nós.
+      categoria: Infraestrutura
+      tags:
+      - FastAPI
+      - nginx
+      subdockers:
+        Frontend:
+          porta: 3310
+        API:
+          porta: 8900
